@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="此C++系列的笔记，是根据黑马程序员的C++视频教程所写。核心编程包括的是C++中的基础东西">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++笔记（二）核心编程">
+<meta property="og:url" content="http://example.com/2022/04/08/C++%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89%E6%A0%B8%E5%BF%83%E7%BC%96%E7%A8%8B/index.html">
+<meta property="og:site_name" content="Enjoy Life">
+<meta property="og:description" content="此C++系列的笔记，是根据黑马程序员的C++视频教程所写。核心编程包括的是C++中的基础东西">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-04-08T11:48:33.031Z">
+<meta property="article:modified_time" content="2022-04-08T12:35:09.497Z">
+<meta property="article:author" content="ZhangZuo">
+<meta property="article:tag" content="C++笔记">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2022/04/08/C++%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89%E6%A0%B8%E5%BF%83%E7%BC%96%E7%A8%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>C++笔记（二）核心编程 | Enjoy Life</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Enjoy Life</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">人生没有彩排,每天都是现场直播</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/04/08/C++%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89%E6%A0%B8%E5%BF%83%E7%BC%96%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.jpg">
+      <meta itemprop="name" content="ZhangZuo">
+      <meta itemprop="description" content="我就系皮蛋啦">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Enjoy Life">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C++笔记（二）核心编程
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-04-08 19:48:33 / 修改时间：20:35:09" itemprop="dateCreated datePublished" datetime="2022-04-08T19:48:33+08:00">2022-04-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>此C++系列的笔记，是根据黑马程序员的C++视频教程所写。核心编程包括的是C++中的基础东西</p>
+<span id="more"></span>
+
+<h3 id="内存分区模型"><a href="#内存分区模型" class="headerlink" title="内存分区模型"></a>内存分区模型</h3><ul>
+<li>代码区：存放函数体的二进制代码，由操作系统管理（存放CPU执行的机器指令）（程序运行前就有了）</li>
+<li><ul>
+<li>共享：由于会频繁的被执行，因此代码只需要存放一份共享</li>
+<li>只读：防止程序意外修改内部指令</li>
+</ul>
+</li>
+<li>全局区：存放全局变量、静态变量和常量（字符串常量和const修饰的全局变量）（程序运行前就有了）</li>
+<li><ul>
+<li>注：const修饰的局部变量（局部常量）不在全局区中</li>
+</ul>
+</li>
+<li>栈区：有编译器分配释放，存放函数的参数和局部变量等</li>
+<li><ul>
+<li>注：在函数体中，不要返回局部变量的地址，因为函数执行完，在栈区的局部变量会自动释放，此时返回局部变量的地址可能会返回一个乱码</li>
+</ul>
+</li>
+<li>堆区：由程序员分配释放，若不释放，在程序结束时由操作系统回收。</li>
+<li><ul>
+<li>注：可以使用new关键字在堆区创建变量（因此，在上面栈区的注意事项中，可以在函数体的变量中用new关键字（new返回的是指针，就是地址）在堆区创建变量，那么可以返回函数中的局部变量）</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//new、delete关键字的使用</span></span><br><span class="line"><span class="function"><span class="type">double</span> * <span class="title">func</span><span class="params">()</span></span>&#123;          <span class="comment">//返回double类型的指针</span></span><br><span class="line">    <span class="type">double</span> * p = <span class="keyword">new</span> <span class="built_in">double</span>(<span class="number">10.0</span>);  <span class="comment">//用new创建一个double类型的数据10.0</span></span><br><span class="line">                                    <span class="comment">//new返回的是该数据类型的指针</span></span><br><span class="line">    <span class="keyword">return</span> p;                       <span class="comment">//这样使用new将数据创建在堆区中，堆区是我们自己管理，因</span></span><br><span class="line">                                    <span class="comment">//此可以返回后不会释放</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">test1</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="type">double</span> * a = <span class="built_in">func</span>();  <span class="comment">//使用指正接受返回值</span></span><br><span class="line">    cout &lt;&lt; *a &lt;&lt; endl;   <span class="comment">//输出10.0</span></span><br><span class="line">    <span class="keyword">delete</span> p;             <span class="comment">//手动释放这块堆区内存</span></span><br><span class="line">    <span class="comment">//cout &lt;&lt; *a &lt;&lt; endl; //这时候访问返回的指针就是非法访问，会报错</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">test2</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="type">int</span> * arry = <span class="keyword">new</span> <span class="type">int</span>[<span class="number">10</span>]   <span class="comment">//使用new创建一个数组，数组空间是10，就是10个数的数组</span></span><br><span class="line">                               <span class="comment">//注意定义数组使用的[]和上面定义变量使用的()</span></span><br><span class="line">    cout &lt;&lt; arry[<span class="number">9</span>] &lt;&lt; endl;   <span class="comment">//这时候直接输出数组的第10个数值是没有数值的，就是这时候没有</span></span><br><span class="line">                               <span class="comment">//定义这个数组中的数值都是什么，可以用for循环给数组赋值</span></span><br><span class="line">    <span class="keyword">delete</span>[] arry;             <span class="comment">//注意释放数组使用的[]</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h3><h4 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h4><ul>
+<li>引用就是给一个变量起了一个别名，这个别名与原名是一块内存，因此可以互相修改改变内存值</li>
+<li><ul>
+<li>引用的本质就是指针常量（指针的指向不可以改变），因此初始化后不可以再改变</li>
+<li>语法：数据类型 &amp;别名 &#x3D; 原名</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> a = <span class="number">10</span>;           <span class="comment">//定义一个变量</span></span><br><span class="line"><span class="type">int</span> &amp;b = a;           <span class="comment">//使用引用&amp;，这样b就是a的别名</span></span><br><span class="line">b = <span class="number">20</span>;               <span class="comment">//这是对b进行操作，就是对a进行操作，a的值也会改变</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h4><ul>
+<li><p>引用必须初始化 <code>int &amp;b    //这是错误的</code></p>
+</li>
+<li><ul>
+<li>引用在初始化之后不可以改变<code>b = c     //b作为a的引用，不可以改变为其他的变量c的引用 </code></li>
+</ul>
+</li>
+<li><p>引用作为函数参数</p>
+</li>
+<li><ul>
+<li>可以用引用的技术让形参修饰实参，达到简化指针修改实参的效果</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">myswap1</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b)</span></span>&#123;        <span class="comment">//使用值传递的方式</span></span><br><span class="line">    <span class="type">int</span> temp = a;</span><br><span class="line">    a = b;</span><br><span class="line">    b = temp;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">myswap2</span><span class="params">(<span class="type">int</span> *a, <span class="type">int</span> *b)</span></span>&#123;      <span class="comment">//使用地址传递的方式</span></span><br><span class="line">    <span class="type">int</span> temp = *a;</span><br><span class="line">    *a = *b;</span><br><span class="line">    *b = temp;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">myswap3</span><span class="params">(<span class="type">int</span> &amp;a, <span class="type">int</span> &amp;b)</span></span>&#123;      <span class="comment">//使用引用作为形参的方式</span></span><br><span class="line">    <span class="type">int</span> temp = a;                  <span class="comment">//写法跟值传递的方式一样，但是实现效果跟地址传递一样</span></span><br><span class="line">    a = b;</span><br><span class="line">    b = temp;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="type">int</span> a = <span class="number">10</span>;</span><br><span class="line">    <span class="type">int</span> b = <span class="number">20</span>;</span><br><span class="line">    <span class="built_in">myswap1</span>();                      <span class="comment">//值传递不会修改实参的值</span></span><br><span class="line">    <span class="built_in">myswap2</span>();                      <span class="comment">//地址传递可以修改实参的值</span></span><br><span class="line">    <span class="built_in">myswap3</span>();                      <span class="comment">//使用引用可以修改实参的值</span></span><br><span class="line">    								<span class="comment">//因为引用的别名跟原名使用的同一块内存</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="引用做函数返回值"><a href="#引用做函数返回值" class="headerlink" title="引用做函数返回值"></a>引用做函数返回值</h4><ul>
+<li>引用不可以作为局部变量的返回值</li>
+<li>使用引用作为函数的返回值时，函数的调用可以作为左值（就是说可以给这个函数的返回值赋值）</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span>&amp; <span class="title">func</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="type">static</span> <span class="type">int</span> a = <span class="number">20</span>;             <span class="comment">//这是创建在全局区的变量，在函数执行完之后不会被释放。</span></span><br><span class="line">    							   <span class="comment">//因此可以作为返回值返回</span></span><br><span class="line">    <span class="comment">//int a = 10;                  //这是创建在栈区的局部变量，在函数执行完之后会被释放</span></span><br><span class="line">                                   <span class="comment">//因此不可以作为返回值返回</span></span><br><span class="line">    <span class="keyword">return</span> a;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="type">int</span>&amp; ref = <span class="built_in">func</span>();             <span class="comment">//需要使用引用的变量接收函数的返回值</span></span><br><span class="line">    <span class="built_in">func</span>() = <span class="number">1000</span>;                 <span class="comment">//引用的作为返回值的函数可以作为左值，成为被赋值的乙方</span></span><br><span class="line">    cout &lt;&lt; ref &lt;&lt; endl;           <span class="comment">//这时，ref输出的就是1000了</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="常量引用"><a href="#常量引用" class="headerlink" title="常量引用"></a>常量引用</h4><ul>
+<li>为了防止函数中误操作形参导致实参修改的情况（跟const在函数中的使用一样）</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">func</span><span class="params">(<span class="type">const</span> <span class="type">int</span> &amp;a)</span></span>&#123;        <span class="comment">//用引用作为形参，防止函数修改此形参添加const</span></span><br><span class="line">    <span class="comment">//a = 100;                  //因为形参a加了const，所以这里不可以修改</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> &amp;ref = <span class="number">10</span>;        <span class="comment">//这句可以运行，虽然并没有制定引用的原名是什么</span></span><br><span class="line">    							<span class="comment">//这句在编译时，会自动修改为两句：</span></span><br><span class="line">    							<span class="comment">//int temp = 10;  const int &amp;ref = temp;</span></span><br><span class="line">    ref = <span class="number">20</span>;                   <span class="comment">//可以直接对引用操作</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="函数高级"><a href="#函数高级" class="headerlink" title="函数高级"></a>函数高级</h3><h4 id="默认参数"><a href="#默认参数" class="headerlink" title="默认参数"></a>默认参数</h4><ul>
+<li>如果有我们自己传入的数据，那么就用自己的数据，如果没有，就用默认值</li>
+<li>注：如果某个位置已经有了默认参数，那么这个位置之后，都必须有默认值</li>
+<li>注：函数的声明和实现只能有一个有默认参数</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">func1</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b = <span class="number">10</span>, <span class="type">int</span> c = <span class="number">20</span>)</span></span>&#123;        <span class="comment">//b有默认值，那么c必须也要有默认值</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//调用时：</span></span><br><span class="line"><span class="built_in">func1</span>(<span class="number">10</span>);　　　　　　　　　　　　　　　　　　　　　　　<span class="comment">//因为有默认值，可以不输入带有默认值的参数</span></span><br><span class="line"><span class="built_in">func1</span>(<span class="number">10</span>,<span class="number">20</span>);　　　　　　　　　　　　　　　　　　　　　 <span class="comment">//也可以输入带有默认参数的值，b为20 </span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">func2</span><span class="params">(<span class="type">int</span> a = <span class="number">10</span>, <span class="type">int</span> b = <span class="number">20</span>)</span></span>;              <span class="comment">//函数的默认参数在声明和实现只有一个存在</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">func2</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b)</span></span>&#123;　　　　　　　　　　　　　　　<span class="comment">//函数的声明有默认参数，实现就不需要了</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="占位参数"><a href="#占位参数" class="headerlink" title="占位参数"></a>占位参数</h4><ul>
+<li>语法：　返回值类型　函数名（数据类型）　｛｝</li>
+<li>占位参数可以有默认参数</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">func1</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span>)</span></span>&#123;&#125;             <span class="comment">//形参中的int，就是占位参数</span></span><br><span class="line">   　　　　　　　　　　　　　　　　　　　　 <span class="comment">//后面会用到这个占位参数</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">func2</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> = <span class="number">10</span>)</span></span>&#123;&#125;　　　　 <span class="comment">//占位参数可以有默认参数</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="built_in">func</span>(<span class="number">10</span>,<span class="number">10</span>);　　　　　　　　　　　　　<span class="comment">//占位参数没有变量，但是依然需要传入参数</span></span><br><span class="line">    <span class="built_in">func</span>(<span class="number">10</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="函数重载"><a href="#函数重载" class="headerlink" title="函数重载"></a>函数重载</h4><ul>
+<li>可以让函数名相同，提高复用性</li>
+<li>函数重载的条件</li>
+<li><ul>
+<li>同一个作用域下</li>
+<li>函数名称相同</li>
+<li>函数的参数类型（int和const int也是不同的）不同，或者数量不同或者，顺序不同</li>
+<li>返回值的类型不同不能作为函数重载的条件（换句话说，函数名可以相同，但是要根据参数让编译器分辨出你要执行的是那个函数）</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">func</span><span class="params">()</span></span>&#123;&#125;　　　　　　　　　　　　 <span class="comment">//函数重载名称可以相同，但是参数不能相同</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">func</span><span class="params">(<span class="type">int</span> a)</span></span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">func</span><span class="params">(<span class="type">double</span> a, <span class="type">int</span> b)</span></span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">func</span><span class="params">(<span class="type">double</span> a, <span class="type">int</span> b)</span></span>&#123;&#125;        <span class="comment">//不能将返回值作为重载的条件，因为编译器识别不出来</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="built_in">func</span>();　　　　　　　　　　　　　　 <span class="comment">//执行的时候编译器会根据参数的不同使用不同的函数</span></span><br><span class="line">    <span class="built_in">func</span>(<span class="number">10</span>);</span><br><span class="line">    <span class="built_in">func</span>(<span class="number">10.0</span>,<span class="number">10</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>函数重载注意事项</li>
+<li><ul>
+<li>引用作为重载的条件</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">func</span><span class="params">(<span class="type">int</span> &amp;a)</span></span>&#123;&#125;                 <span class="comment">//引用作为重载</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">func</span><span class="params">(<span class="type">const</span> <span class="type">int</span> &amp;a)</span></span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="type">int</span> a = <span class="number">10</span>;</span><br><span class="line">    <span class="built_in">func</span>(a);　　　　　　　　　　　　　　　<span class="comment">//这句会运行第一个函数，因为a是一个变量</span></span><br><span class="line">    <span class="built_in">func</span>(<span class="number">10</span>);　　　　　　　　　　　　　　<span class="comment">//这句会运行第二个函数</span></span><br><span class="line">    <span class="comment">//对第一个函数来说，实参给到形参相当于int &amp;a = 10，不合法</span></span><br><span class="line">   　<span class="comment">//对第二个函数来说，实参给到形参相当于const int &amp;a = 10，合法，在引用那里找，这句是合法的</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><ul>
+<li>函数重载碰到默认参数</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">func</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b = <span class="number">10</span>)</span></span>&#123;&#125;       <span class="comment">//尽量避免使用带有默认参数的函数重载</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">func</span><span class="params">(<span class="type">int</span> a)</span></span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="built_in">func</span>(<span class="number">10</span>,<span class="number">20</span>);　　　　　　　　　　　　　<span class="comment">//可以运行</span></span><br><span class="line">    <span class="built_in">func</span>(<span class="number">10</span>);　　　　　　　　　　　　　　　<span class="comment">//会出错，编译器不知道你要运行哪个</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+      
+    </div>
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>ZhangZuo
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://example.com/2022/04/08/C++%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89%E6%A0%B8%E5%BF%83%E7%BC%96%E7%A8%8B/" title="C++笔记（二）核心编程">http://example.com/2022/04/08/C++笔记（二）核心编程/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/C-%E7%AC%94%E8%AE%B0/" rel="tag"><i class="fa fa-tag"></i>C++笔记</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/04/08/C++%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E7%A1%80%E7%BC%96%E7%A8%8B/" rel="prev" title="C++笔记（一）基础编程">
+      <i class="fa fa-chevron-left"></i> C++笔记（一）基础编程
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/04/08/C++%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%89%EF%BC%89%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A11/" rel="next" title="C++笔记（三）类和对象1">
+      C++笔记（三）类和对象1 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E5%8C%BA%E6%A8%A1%E5%9E%8B"><span class="nav-text">内存分区模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E7%94%A8"><span class="nav-text">引用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="nav-text">基本语法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-text">注意事项</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%95%E7%94%A8%E5%81%9A%E5%87%BD%E6%95%B0%E8%BF%94%E5%9B%9E%E5%80%BC"><span class="nav-text">引用做函数返回值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B8%B8%E9%87%8F%E5%BC%95%E7%94%A8"><span class="nav-text">常量引用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E9%AB%98%E7%BA%A7"><span class="nav-text">函数高级</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%BB%98%E8%AE%A4%E5%8F%82%E6%95%B0"><span class="nav-text">默认参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8D%A0%E4%BD%8D%E5%8F%82%E6%95%B0"><span class="nav-text">占位参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E9%87%8D%E8%BD%BD"><span class="nav-text">函数重载</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="ZhangZuo"
+      src="/images/head.jpg">
+  <p class="site-author-name" itemprop="name">ZhangZuo</p>
+  <div class="site-description" itemprop="description">我就系皮蛋啦</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zhang-zuo" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhang-zuo" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangzuoos@163.com" title="E-Mail → mailto:zhangzuoos@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zz_0000000" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zz_0000000" rel="noopener" target="_blank"><i class="fab fa-skype fa-fw"></i></a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">©2022 by zhang-zuo</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">71k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">2:09</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/love.js"></script>

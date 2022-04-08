@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="此C++系列的笔记，是根据黑马程序员的C++视频教程所写。基础编程包括的是对于接触过C的人，一些不常见或者容易忘记的一些知识点">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++笔记（一）基础编程">
+<meta property="og:url" content="http://example.com/2022/04/08/C++%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E7%A1%80%E7%BC%96%E7%A8%8B/index.html">
+<meta property="og:site_name" content="Enjoy Life">
+<meta property="og:description" content="此C++系列的笔记，是根据黑马程序员的C++视频教程所写。基础编程包括的是对于接触过C的人，一些不常见或者容易忘记的一些知识点">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2022/03/18/Pd31ZDt8iYgIU5F.png">
+<meta property="article:published_time" content="2022-04-08T07:10:42.827Z">
+<meta property="article:modified_time" content="2022-04-08T12:34:20.773Z">
+<meta property="article:author" content="ZhangZuo">
+<meta property="article:tag" content="C++笔记">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2022/03/18/Pd31ZDt8iYgIU5F.png">
+
+<link rel="canonical" href="http://example.com/2022/04/08/C++%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E7%A1%80%E7%BC%96%E7%A8%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>C++笔记（一）基础编程 | Enjoy Life</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Enjoy Life</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">人生没有彩排,每天都是现场直播</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/04/08/C++%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E7%A1%80%E7%BC%96%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.jpg">
+      <meta itemprop="name" content="ZhangZuo">
+      <meta itemprop="description" content="我就系皮蛋啦">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Enjoy Life">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C++笔记（一）基础编程
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-04-08 15:10:42 / 修改时间：20:34:20" itemprop="dateCreated datePublished" datetime="2022-04-08T15:10:42+08:00">2022-04-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>此C++系列的笔记，是根据黑马程序员的C++视频教程所写。基础编程包括的是对于接触过C的人，一些不常见或者容易忘记的一些知识点</p>
+<span id="more"></span>
+
+<h3 id="浮点数据类型"><a href="#浮点数据类型" class="headerlink" title="浮点数据类型"></a>浮点数据类型</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">float</span> f1 = <span class="number">3.14f</span>;      <span class="comment">//如果不写这个ｆ，那么程序会默认为这个是double类型</span></span><br><span class="line">　　　　　　　　　　　　   <span class="comment">//因此，这段代码会经过一个强制类型转换成float。</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="转义字符"><a href="#转义字符" class="headerlink" title="转义字符"></a>转义字符</h3><ul>
+<li>水平制表符\t</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">cout &lt;&lt; <span class="string">&quot;a\thello&quot;</span> &lt;&lt; endl;      </span><br><span class="line">cout &lt;&lt; <span class="string">&quot;aa\thello&quot;</span> &lt;&lt; endl;</span><br><span class="line">cout &lt;&lt; <span class="string">&quot;aaa\thello&quot;</span> &lt;&lt; endl;</span><br><span class="line"><span class="comment">//这三行代码的输出，会非常的整齐：</span></span><br><span class="line"><span class="comment">// a   hello</span></span><br><span class="line"><span class="comment">// aa  hello</span></span><br><span class="line"><span class="comment">// aaa hello          //制表符会自动调整宽度，可以整齐的输出</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="三目运算符"><a href="#三目运算符" class="headerlink" title="三目运算符"></a>三目运算符</h3><ul>
+<li>语法：<strong>表达式１　？　表达式２　：　表达式３</strong></li>
+<li>解释：如果表达式１的值为真，执行表达式２，并返回表达式２的结果（反之就是表达式３）。</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">c = a &gt; b ? a :b;           <span class="comment">//给c赋值：a和b中最大的值</span></span><br><span class="line">a &gt; b ? a : b = <span class="number">100</span>;　　　　　<span class="comment">//给a和b中最大的值，赋值100</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="循环结构"><a href="#循环结构" class="headerlink" title="循环结构"></a>循环结构</h3><ul>
+<li>while语句是先进行判断，再运行语句</li>
+<li>do…while语句是先运行一次循环，再进行判断。</li>
+<li><ul>
+<li>语法：do{循环语句}　while(循环条件);</li>
+</ul>
+</li>
+<li>for循环执行顺序：</li>
+</ul>
+<img src="https://s2.loli.net/2022/03/18/Pd31ZDt8iYgIU5F.png" alt="image-20220302194547856" style="zoom: 67%;" />
+
+<h3 id="跳转语句"><a href="#跳转语句" class="headerlink" title="跳转语句"></a>跳转语句</h3><ul>
+<li>break：跳转出最近的内层循环，是直接退出循环，而不是进行下一次循环</li>
+<li>continue：不执行剩下的语句，直接进行下一次循环</li>
+<li>goto：无条件跳转</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">goto</span> flag;     <span class="comment">//程序执行到这里，会强制跳转到flag标记处</span></span><br><span class="line">flag:　　　　　　<span class="comment">//需要要有标记处</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<h3 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h3><ul>
+<li>指针就是地址，既然是地址，那么所占用的大小，也就是int大小（32位系统占用４字节，64位系统占用８字节，一般都是32字节的）</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> a = <span class="number">10</span>;</span><br><span class="line"><span class="type">int</span> *p;              <span class="comment">//定义int型指针，p就是一个地址</span></span><br><span class="line">p = &amp;a;　　　　　　　　 <span class="comment">//＆a就是取地址，此时，p是a的地址</span></span><br><span class="line">cout &lt;&lt; *p &lt;&lt; endl;　 <span class="comment">//*解引用，找到p作为地址所指向的值</span></span><br><span class="line">					　<span class="comment">//*p = 10</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="空指针"><a href="#空指针" class="headerlink" title="空指针"></a>空指针</h4><ul>
+<li>不可访问，默认指向了0地址（0~255地址被系统占用）。</li>
+<li>一般用于你有一个指针，暂时不知道赋什么值</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> *p = <span class="literal">NULL</span>;        <span class="comment">//空指针</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="const修饰指针"><a href="#const修饰指针" class="headerlink" title="const修饰指针"></a>const修饰指针</h4><ul>
+<li>常量指针：指针的指向可以修改，但是指针指向的值不可修改</li>
+<li>指针常量：指针的指向不可修改，但是指针指向的值可以修改</li>
+<li>修饰指针和常量：指针的指向和指针指向的值都不可修改</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> a = <span class="number">10</span>;</span><br><span class="line"><span class="type">int</span> b =<span class="number">20</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> *p = &amp;a;   <span class="comment">//常量指针</span></span><br><span class="line">*p = <span class="number">20</span>;　　　　　　　　<span class="comment">//错误，指针指向的值不可以修改</span></span><br><span class="line">p = &amp;b;　　　　　　　　 <span class="comment">//正确，指针的指向可以修改</span></span><br><span class="line"><span class="type">int</span> <span class="type">const</span> *p = &amp;a;   <span class="comment">//指针常量</span></span><br><span class="line">*p = <span class="number">20</span>;             <span class="comment">//正确，指针指向的值可以修改</span></span><br><span class="line">p = &amp;b;              <span class="comment">//错误，指针的指向不可修改</span></span><br><span class="line"><span class="type">const</span> <span class="type">int</span> <span class="type">const</span> *p = &amp;a;   <span class="comment">//修饰指针和常量，都不可修改</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="指针与函数"><a href="#指针与函数" class="headerlink" title="指针与函数"></a>指针与函数</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">swap</span><span class="params">(<span class="type">int</span> *p1, <span class="type">int</span> *p2)</span></span>&#123;</span><br><span class="line">    <span class="type">int</span> temp = *p1;</span><br><span class="line">    *p1 = *p2;        <span class="comment">//用解引用的方式，p1地址指向的值</span></span><br><span class="line">    *p2 = temp;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="type">int</span> a = <span class="number">10</span>;</span><br><span class="line">    <span class="type">int</span> b = <span class="number">20</span>;</span><br><span class="line">    <span class="built_in">swap</span>(&amp;a, &amp;b);　　　<span class="comment">//将a,b取地址，可改变形参和实参</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="结构体"><a href="#结构体" class="headerlink" title="结构体"></a>结构体</h3><h4 id="定义和使用（三种方式）"><a href="#定义和使用（三种方式）" class="headerlink" title="定义和使用（三种方式）"></a>定义和使用（三种方式）</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">student</span>&#123;</span><br><span class="line">    string name;</span><br><span class="line">    <span class="type">int</span> age;</span><br><span class="line">    <span class="type">int</span> score;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//&#125;s3;                  //对应方式三的形式</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    student s1;　　　　　 <span class="comment">//方式一：直接声明一个结构体</span></span><br><span class="line">    student s2 = &#123;<span class="string">&quot;李四&quot;</span>, <span class="number">19</span>, <span class="number">90</span>&#125;;　　<span class="comment">//方式二：声明结构体是直接赋值</span></span><br><span class="line">    s3.name = <span class="string">&quot;王五&quot;</span>;　　 <span class="comment">//方式三：在结构体的最后命名s3，可以直接使用</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="结构体数组"><a href="#结构体数组" class="headerlink" title="结构体数组"></a>结构体数组</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">student</span>&#123;</span><br><span class="line">    string name;</span><br><span class="line">    <span class="type">int</span> age;</span><br><span class="line">    <span class="type">int</span> score;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    student arry[<span class="number">3</span>] = &#123;</span><br><span class="line">        &#123;<span class="string">&quot;张三&quot;</span>,<span class="number">19</span>,<span class="number">90</span>&#125;,</span><br><span class="line">        &#123;<span class="string">&quot;李四&quot;</span>,<span class="number">20</span>,<span class="number">91</span>&#125;</span><br><span class="line">    &#125;;                        <span class="comment">//直接赋值的方式</span></span><br><span class="line">    arry[<span class="number">1</span>].name = <span class="string">&quot;王五&quot;</span>;　　　<span class="comment">//可以对数组直接使用.运算符，访问数据</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="结构体指针"><a href="#结构体指针" class="headerlink" title="结构体指针"></a>结构体指针</h4><ul>
+<li>就是使用指针访问结构体中的变量，使用-&gt;运算符</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">student</span>&#123;</span><br><span class="line">    string name;</span><br><span class="line">    <span class="type">int</span> age;</span><br><span class="line">    <span class="type">int</span> score;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    student s = &#123;<span class="string">&quot;张三&quot;</span>, <span class="number">19</span>, <span class="number">10</span>&#125;;</span><br><span class="line">    <span class="comment">//int *p = &amp;s;              //必须对应到s的类型</span></span><br><span class="line">    student *p = &amp;s;　　　　　　　 <span class="comment">//定义一个指针指向结构体</span></span><br><span class="line">    cout &lt;&lt; p-&gt;name &lt;&lt; endl;　　　<span class="comment">//指针访问结构的变量，使用-&gt;运算符</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="结构体做函数参数"><a href="#结构体做函数参数" class="headerlink" title="结构体做函数参数"></a>结构体做函数参数</h4><ul>
+<li>有值传递（形参修改不会影响实参的值）和地址传递（形参和实参相同，修改任一项都会更改另一项）两种</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//定义结构体同上，struct student</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">printstudent1</span><span class="params">(student s)</span></span>&#123;</span><br><span class="line">    s.age = <span class="number">20</span>;                 <span class="comment">//值传递不会修改实参的值，因此没用</span></span><br><span class="line">    cout &lt;&lt; s.name &lt;&lt; endl;       <span class="comment">//值传递使用.运算符访问</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">printstudent2</span><span class="params">(student *p)</span></span>&#123;　　<span class="comment">//形参是定义一个指针</span></span><br><span class="line">    s-&gt;age = <span class="number">20</span>;                   <span class="comment">//地址传递会修改实参的值</span></span><br><span class="line">    cout &lt;&lt; p-&gt;name &lt;&lt; endl;　　　　<span class="comment">//地址传递使用-&gt;运算符访问</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    student s = &#123;<span class="string">&quot;战三&quot;</span>, <span class="number">29</span> ,<span class="number">10</span>&#125;;</span><br><span class="line">    <span class="built_in">printstudent1</span>(s);</span><br><span class="line">    <span class="built_in">printstudent2</span>(&amp;s);　　<span class="comment">//使用地址传递，也需要对应使用取地址符号</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="结构体中const使用"><a href="#结构体中const使用" class="headerlink" title="结构体中const使用"></a>结构体中const使用</h4><ul>
+<li>由于地址传递可以更改实参的值，为了防止误操作而修改的实参的值，因此引入了const。</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//结构体定义如上：struct student</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">printstudent2</span><span class="params">(<span class="type">const</span> student *p)</span></span>&#123;　<span class="comment">//在形参时添加const</span></span><br><span class="line">    s-&gt;age = <span class="number">20</span>;       <span class="comment">//这里会报错，因此使用了const不能修改实参的值</span></span><br><span class="line">    　　　　　　　　　　　 <span class="comment">//const就是让函数中的操作只可以读，不可以</span></span><br><span class="line">    cout &lt;&lt; p-&gt;name &lt;&lt; endl;　　　　<span class="comment">//地址传递使用-&gt;运算符访问</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+      
+    </div>
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>ZhangZuo
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://example.com/2022/04/08/C++%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E7%A1%80%E7%BC%96%E7%A8%8B/" title="C++笔记（一）基础编程">http://example.com/2022/04/08/C++笔记（一）基础编程/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/C-%E7%AC%94%E8%AE%B0/" rel="tag"><i class="fa fa-tag"></i>C++笔记</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2022/04/08/C++%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89%E6%A0%B8%E5%BF%83%E7%BC%96%E7%A8%8B/" rel="next" title="C++笔记（二）核心编程">
+      C++笔记（二）核心编程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%AE%E7%82%B9%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-text">浮点数据类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%AC%E4%B9%89%E5%AD%97%E7%AC%A6"><span class="nav-text">转义字符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E7%9B%AE%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="nav-text">三目运算符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E7%BB%93%E6%9E%84"><span class="nav-text">循环结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B7%B3%E8%BD%AC%E8%AF%AD%E5%8F%A5"><span class="nav-text">跳转语句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E9%92%88"><span class="nav-text">指针</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A9%BA%E6%8C%87%E9%92%88"><span class="nav-text">空指针</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#const%E4%BF%AE%E9%A5%B0%E6%8C%87%E9%92%88"><span class="nav-text">const修饰指针</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8C%87%E9%92%88%E4%B8%8E%E5%87%BD%E6%95%B0"><span class="nav-text">指针与函数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9E%84%E4%BD%93"><span class="nav-text">结构体</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E5%92%8C%E4%BD%BF%E7%94%A8%EF%BC%88%E4%B8%89%E7%A7%8D%E6%96%B9%E5%BC%8F%EF%BC%89"><span class="nav-text">定义和使用（三种方式）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%93%E6%9E%84%E4%BD%93%E6%95%B0%E7%BB%84"><span class="nav-text">结构体数组</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%93%E6%9E%84%E4%BD%93%E6%8C%87%E9%92%88"><span class="nav-text">结构体指针</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%93%E6%9E%84%E4%BD%93%E5%81%9A%E5%87%BD%E6%95%B0%E5%8F%82%E6%95%B0"><span class="nav-text">结构体做函数参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%93%E6%9E%84%E4%BD%93%E4%B8%ADconst%E4%BD%BF%E7%94%A8"><span class="nav-text">结构体中const使用</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="ZhangZuo"
+      src="/images/head.jpg">
+  <p class="site-author-name" itemprop="name">ZhangZuo</p>
+  <div class="site-description" itemprop="description">我就系皮蛋啦</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zhang-zuo" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhang-zuo" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhangzuoos@163.com" title="E-Mail → mailto:zhangzuoos@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zz_0000000" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zz_0000000" rel="noopener" target="_blank"><i class="fab fa-skype fa-fw"></i></a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">©2022 by zhang-zuo</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">71k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">2:09</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/love.js"></script>
