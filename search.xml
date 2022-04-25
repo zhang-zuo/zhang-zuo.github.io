@@ -2000,6 +2000,350 @@
       </tags>
   </entry>
   <entry>
+    <title>CMake工具笔记</title>
+    <url>/2022/04/25/CMake%E7%AC%94%E8%AE%B0/</url>
+    <content><![CDATA[<p>这是CMake相关的笔记，可以通过目录或者搜索寻找相关知识</p>
+<span id="more"></span>
+
+<h3 id="编译器安装"><a href="#编译器安装" class="headerlink" title="编译器安装"></a>编译器安装</h3><ul>
+<li>安装GCC、GDB、CMake</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt install build-essential gdb</span><br><span class="line">sudo apt install cmake</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>验证安装成功</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gcc --version      <span class="comment"># C语言的编译器</span></span><br><span class="line">g++ --version      <span class="comment"># C++语言的编译器</span></span><br><span class="line">gdb --version      <span class="comment"># 调试器</span></span><br><span class="line">cmake --version</span><br></pre></td></tr></table></figure>
+
+<h3 id="gcc、g-、make、cmake"><a href="#gcc、g-、make、cmake" class="headerlink" title="gcc、g++、make、cmake"></a>gcc、g++、make、cmake</h3><h4 id="gcc和g"><a href="#gcc和g" class="headerlink" title="gcc和g++"></a>gcc和g++</h4><h5 id="gcc与g-的概念"><a href="#gcc与g-的概念" class="headerlink" title="gcc与g++的概念"></a>gcc与g++的概念</h5><ul>
+<li>GCC是linux下最常用的C语言编译器，能够编译多种语言</li>
+<li>gcc是GCC中的C编译器</li>
+<li>g++是GCC中的C++编译器</li>
+</ul>
+<h5 id="gcc和g-主要区别"><a href="#gcc和g-主要区别" class="headerlink" title="gcc和g++主要区别"></a>gcc和g++主要区别</h5><ul>
+<li>对于 <em>.c和</em>.cpp文件，gcc分别当做c和cpp文件编译（c和cpp的语法强度是不一样的）; g++则统一当做cpp文件编译</li>
+<li>使用g++编译文件时，g++会自动链接标准库STL，而gcc不会自动链接STL，在用gcc编译c++文件时，为了能够使用STL，需要加参数 –lstdc++ ，但这并不代表 gcc –lstdc++ 和 g++等价</li>
+<li>gcc在编译C文件时，可使用的预定义宏是比较少的</li>
+</ul>
+<h4 id="make和cmake"><a href="#make和cmake" class="headerlink" title="make和cmake"></a>make和cmake</h4><ul>
+<li>当只有一个文件去编译的时候，可以使用g++编译，但是当有很多文件时，使用g++命令编译工作量巨大，因此可以使用makefile文件，针对拥护指定的命令编译和连接。（就是活makefile包括了gcc命令）</li>
+<li>简单的工程完全可以手写makefile文件，但是工程巨大的时候，就提出了cmake工具。就是用户自己写CMakeList.txt文件，使用cmake工具自动生成makefile文件，再使用make工具，对工程进行编译。</li>
+<li>cmake的优点是可以跨平台使用，就是会生成对应平台支持的makefile文件</li>
+</ul>
+<h3 id="gcc编译器"><a href="#gcc编译器" class="headerlink" title="gcc编译器"></a>gcc编译器</h3><h4 id="编译流程"><a href="#编译流程" class="headerlink" title="编译流程"></a>编译流程</h4><h5 id="1-预处理（源文件-gt-i）"><a href="#1-预处理（源文件-gt-i）" class="headerlink" title="1.预处理（源文件 -&gt; .i）"></a>1.预处理（源文件 -&gt; .i）</h5><ul>
+<li><p><strong>预处理器都干了什么</strong></p>
+</li>
+<li><ul>
+<li>预处理阶段不会做任何语法检查，因为预处理器不会，而且预处理命令不属于C/C++的语句，(这也是宏定义的时候不加分号的原因)，语法检查是编译器做的事情</li>
+<li>将所有的#define宏定义展开，就是代码中的宏定义用具体指定的值替代</li>
+<li>处理所有的条件预编译指令，如#if #ifdef #elif #else等等</li>
+<li>将#include（预编译指令）包含的文件插入到预编译指令的位置</li>
+<li>删除所有注释</li>
+<li>添加行号和标示，用于在编译调试过程中使用</li>
+</ul>
+</li>
+<li><p><strong>预处理命令</strong></p>
+</li>
+<li><ul>
+<li><strong>宏定义</strong></li>
+<li><ul>
+<li>预处理#include时，为了防止文件被重复引用，有两种方式：#ifndef和#pragma</li>
+<li>#ifndef是防止一块代码被重复引用，在C中经常使用，尤其是在头文件的开头，防止重复引用</li>
+<li>#pragme once是C++的特性（现在新的GCC也支持），可以在头文件的开头写明，这样不会出现文件被引用多次的情况，防止引发宏名碰撞出现一些奇怪的问题。</li>
+<li>#pragma后面可以接的不仅仅是once还可以有其他的供编译器识别</li>
+<li>#ifndef的对象是一块代码，#pragma的对象是一个文件</li>
+</ul>
+</li>
+<li><strong>预先编译命令</strong></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">写法</th>
+<th align="center">解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">#include</td>
+<td align="center">尖括号：编译器会在系统路径下查找头文件<br />双引号：编译器现在当前目录下查找头文件，然后去系统路径查找</td>
+</tr>
+<tr>
+<td align="center">#define</td>
+<td align="center">无参宏定义：#define 宏名 字符串<br />有参宏定义：#define 宏名（参数表） 字符串</td>
+</tr>
+<tr>
+<td align="center">#ifdef #else #endif #ifndef</td>
+<td align="center">条件编译，只会处理起作用的部分代码</td>
+</tr>
+<tr>
+<td align="center">#if #elif</td>
+<td align="center">#elif相当于else if 语句，注意是#elif，而不是#elseif</td>
+</tr>
+</tbody></table>
+</li>
+<li><p><strong>与宏定义相似的处理</strong></p>
+</li>
+<li><ul>
+<li><p><strong>内联函数（inline）</strong></p>
+</li>
+<li><ul>
+<li>普通的函数调用的时候需要保留现场、执行、返回主调函数、恢复现场等等操作，是非常消耗时间的操作。而内联函数，就是<strong>将一些很简单的函数内嵌到调用他的程序代码中</strong>，是一种以空间换时间的方法</li>
+<li>内联函数的要求较严格，必须是很简单的函数，所以，就算我们定义了函数是内联函数，编译器也并不一定会将其设置成内联函数，编译器会自动的将一些简单的函数定义为内联函数</li>
+<li>内联函数和宏定义的区别在于对参数的处理，宏定义直接替换，而内联函数终究是函数，会进行运算求值，再把结果返回给形参</li>
+</ul>
+</li>
+<li><p><strong>typedef</strong></p>
+</li>
+<li><ul>
+<li>typedef就是给数据类型一个新的名字，跟宏定义也有些相似，但是需要注意一些本质区别</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> PIN1 int *           <span class="comment">//将int * 宏定义为PIN1</span></span></span><br><span class="line"><span class="built_in">typedef</span> (<span class="type">int</span> *) PIN2         <span class="comment">//将int * 取个新名字PIN2</span></span><br><span class="line"><span class="comment">//使用的区别</span></span><br><span class="line">PIN1 a,b;                    </span><br><span class="line"><span class="comment">//预处理之后是 int *a,b   直接替换，变成了一个指针，一个整型</span></span><br><span class="line">PIN2 a,b;</span><br><span class="line"><span class="comment">//使用typedef之后，就是两个指针</span></span><br><span class="line"><span class="comment">//typedef可以对结构体进行重命名</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">abc</span>&#123;</span><br><span class="line">    <span class="type">int</span> age;</span><br><span class="line">    <span class="type">char</span> a;</span><br><span class="line">&#125;linklist;</span><br><span class="line"><span class="comment">//linklist就是结构体的别名，完全替代</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p><strong>预处理生成文件</strong></p>
+</li>
+<li><ul>
+<li>生成.i文件，如果打开此文件会发现有很多的代码，这是由于将#include插入到文件中了</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># -E 选项是对此文件仅进行预处理</span></span><br><span class="line">g++ -E test.cpp -o test.i</span><br></pre></td></tr></table></figure>
+
+<h5 id="2-编译（-i-gt-s）"><a href="#2-编译（-i-gt-s）" class="headerlink" title="2.编译（.i -&gt; .s）"></a>2.编译（.i -&gt; .s）</h5><ul>
+<li>将代码翻译成汇编语言</li>
+<li>生成.s文件，如果打开此文件会发现里面全部都是汇编语言</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># -S 选项是将代码文件翻译成汇编文件（默认就是.s文件）</span></span><br><span class="line">g++ -S test.i -o test.s</span><br></pre></td></tr></table></figure>
+
+<h5 id="3-汇编（-s-gt-o）"><a href="#3-汇编（-s-gt-o）" class="headerlink" title="3.汇编（.s -&gt; .o）"></a>3.汇编（.s -&gt; .o）</h5><ul>
+<li>将汇编语言转换成机器可以执行的指令，就是按照对照表将汇编一一翻译</li>
+<li>生成.o文件，如果打开此文件会发现里面全是乱码，因为都是机器码</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># -c 选项将汇编代码翻译成机器码（默认是.o文件）</span></span><br><span class="line">g++ -c test.s -o test.o</span><br></pre></td></tr></table></figure>
+
+<h5 id="4-链接（-o-gt-bin文件）"><a href="#4-链接（-o-gt-bin文件）" class="headerlink" title="4.链接（.o -&gt; bin文件）"></a>4.链接（.o -&gt; bin文件）</h5><ul>
+<li>通过使用链接器ld来链接程序运行所需要的目标文件，以及所依赖的其他库文件</li>
+<li>链接的主要内容是：将各个模块之间的相互应用处理好，能够正确的衔接</li>
+<li>链接的主要过程是：地址和空间分配，重定位等</li>
+<li>链接分为静态链接和动态链接：</li>
+<li><ul>
+<li><strong>静态链接：</strong>在编译阶段直接把静态库加入到可执行文件中，这样使得可执行文件比较大</li>
+<li><strong>动态链接：</strong>在链接阶段只加入一些描述信息，在程序执行时再从系统中把相应的动态库加载到内存中</li>
+</ul>
+</li>
+<li>生成bin文件，就是可执行文件</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># -o 生成指定的文件</span></span><br><span class="line">g++ test.o -o <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="g-重要编译参数"><a href="#g-重要编译参数" class="headerlink" title="g++重要编译参数"></a>g++重要编译参数</h4><h5 id="g-调试信息"><a href="#g-调试信息" class="headerlink" title="-g 调试信息"></a>-g 调试信息</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># -g 选项是使得文件生成调试信息，表示这个程序可以被调试器调试</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 产生带有调试信息的可执行文件test</span></span><br><span class="line">g++ -g test.cpp</span><br></pre></td></tr></table></figure>
+
+<h5 id="O-n-优化代码"><a href="#O-n-优化代码" class="headerlink" title="-O[n] 优化代码"></a>-O[n] 优化代码</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 所谓优化,例如省略掉代码中从未使用过的变量、直接将常量表达式用结果值代替等等,这些操作会缩减目标文件所包含的代码量,提高最终生成的可执行文件的运行效率</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># -O[n] n代表优化等级</span></span><br><span class="line"><span class="comment"># -O 同时减小代码的长度和执行时间,其效果等价于-O1</span></span><br><span class="line"><span class="comment"># -O0 表示不做优化</span></span><br><span class="line"><span class="comment"># -O1 为默认优化</span></span><br><span class="line"><span class="comment"># -O2 除了完成-O1的优化之外,还进行一些额外的调整工作,如指令调整等</span></span><br><span class="line"><span class="comment"># -O3 包括循环展开和其他一些与处理特性相关的优化工作</span></span><br><span class="line"><span class="comment"># 一般就是用-O2进行优化代码</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 优化源代码，并输出可执行文件</span></span><br><span class="line">g++ -O2 test.cpp</span><br></pre></td></tr></table></figure>
+
+<h5 id="l和-L-指定库"><a href="#l和-L-指定库" class="headerlink" title="-l和-L 指定库"></a>-l和-L 指定库</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># -l参数(小写)就是用来指定程序要链接的库,-l参数紧接着就是库名</span></span><br><span class="line"><span class="comment"># 在/lib和/usr/lib和/usr/local/lib里的库直接用-l参数就能链接</span></span><br><span class="line"><span class="comment"># 链接glog库</span></span><br><span class="line">g++ -lglog test.cpp</span><br><span class="line"></span><br><span class="line"><span class="comment"># 如果库文件没放在上面三个目录里,需要使用-L参数(大写)指定库文件所在目录</span></span><br><span class="line"><span class="comment"># -L参数跟着的是库文件所在的目录名</span></span><br><span class="line"><span class="comment"># 链接mytest库（动态库）,libmytest.so在指定目录下</span></span><br><span class="line">g++ -L/home -lmytest test.cpp</span><br></pre></td></tr></table></figure>
+
+<h5 id="I-指定头文件搜索目录"><a href="#I-指定头文件搜索目录" class="headerlink" title="-I 指定头文件搜索目录"></a>-I 指定头文件搜索目录</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># -I 选项指定包含的头文件的位置</span></span><br><span class="line"><span class="comment"># /usr/include目录一般是不用指定的,gcc知道去那里找,但是如果头文件在其他目录下我们就要用-I参数指定了,比如头文件放在/myinclude目录里,那编译命令行就要加上-I/myinclude 参数了</span></span><br><span class="line"><span class="comment"># -I参数可以用相对路径</span></span><br><span class="line">g++ -I/myinclude test.cpp</span><br></pre></td></tr></table></figure>
+
+<h5 id="Wall-打开警告信息"><a href="#Wall-打开警告信息" class="headerlink" title="-Wall 打开警告信息"></a>-Wall 打开警告信息</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 打印出gcc的警告信息</span></span><br><span class="line">g++ -Wall test.cpp</span><br></pre></td></tr></table></figure>
+
+<h5 id="w-关闭警告信息"><a href="#w-关闭警告信息" class="headerlink" title="-w 关闭警告信息"></a>-w 关闭警告信息</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 关闭所有警告信息</span></span><br><span class="line">g++ -w test.cpp</span><br></pre></td></tr></table></figure>
+
+<h5 id="std-c-11-编译标准"><a href="#std-c-11-编译标准" class="headerlink" title="-std=c++11 编译标准"></a>-std=c++11 编译标准</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 使用c++11标准进行编译，如果程序中有新特性，就需要添加这项</span></span><br><span class="line">g++ -std=c++11 test.cpp</span><br></pre></td></tr></table></figure>
+
+<h5 id="o-指定输出"><a href="#o-指定输出" class="headerlink" title="-o 指定输出"></a>-o 指定输出</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 指定输出的文件名，后面跟着的就是输出的文件</span></span><br><span class="line">g++ test.cpp -o <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="D-定义宏"><a href="#D-定义宏" class="headerlink" title="-D 定义宏"></a>-D 定义宏</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># -Dname 定义宏name,在编译的时候使用定义宏</span></span><br><span class="line"><span class="comment"># 常用场景:</span></span><br><span class="line"><span class="comment"># -DDEBUG定义DEBUG宏，那么在程序中如果有#ifdef DEBUG的代码，就会执行，如下面例子：</span></span><br><span class="line"></span><br><span class="line">int <span class="function"><span class="title">main</span></span>()&#123;</span><br><span class="line">	<span class="comment">#ifdef DEBUG</span></span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;DEBUG LOG\n&quot;</span>);</span><br><span class="line">	<span class="comment">#endif</span></span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;in\n&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment"># 如果使用了g++ -DDEBUG main.cpp 那么就会指定第7行</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="g-编译实战"><a href="#g-编译实战" class="headerlink" title="g++编译实战"></a>g++编译实战</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">.<span class="comment"># 目录结构</span></span><br><span class="line">├── include</span><br><span class="line">│   └── swap.h</span><br><span class="line">├── main.cpp</span><br><span class="line">└── src</span><br><span class="line">    └── swap.cpp</span><br></pre></td></tr></table></figure>
+
+<h5 id="直接编译"><a href="#直接编译" class="headerlink" title="直接编译"></a>直接编译</h5><ul>
+<li>最简单的编译</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">g++ main.cpp src/swap.cpp -Iinclude</span><br><span class="line"><span class="comment"># 直接指定两个输入的源文件和指定头文件所在目录</span></span><br><span class="line">./a.out</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>添加参数编译</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">g++ main.cpp src/swap.cpp -Iinclude -std=c++11 -O2 -Wall -o b.out</span><br><span class="line"><span class="comment"># 添加一堆参数</span></span><br><span class="line">./b.out</span><br></pre></td></tr></table></figure>
+
+<h5 id="使用库文件编译"><a href="#使用库文件编译" class="headerlink" title="使用库文件编译"></a>使用库文件编译</h5><ul>
+<li>使用静态库链接，生成可执行文件</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 先在其他的源文件下生成自己的静态库文件.a，然后在main源文件下链接</span></span><br><span class="line"><span class="built_in">cd</span> src</span><br><span class="line"><span class="comment"># 汇编，生成.o文件</span></span><br><span class="line">g++ swap.cpp -c -I../include</span><br><span class="line"><span class="comment"># 生成静态库文件.a　库文件都是lib*.a，其中的*指的就是库名</span></span><br><span class="line"><span class="comment"># 下面就是将swap.o转换成静态库文件libswap.a</span></span><br><span class="line">ar rs libswap.a swap.o</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> ..</span><br><span class="line"><span class="comment"># 链接，生成可执行文件</span></span><br><span class="line">g++ main.cpp -Iinclude -Lsrc -lswap -o static_main</span><br><span class="line"><span class="comment"># -Iinclude 指定头文件搜索目录</span></span><br><span class="line"><span class="comment"># -Lsrc 指定库文件的目录</span></span><br><span class="line"><span class="comment"># -lswap 指定库的名字，就是libswap.a中的swap</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行可执行文件</span></span><br><span class="line">./static_main</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用动态库链接，生成可执行文件</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 先在其他的源文件下生成自己的动态库文件.so，然后在main源文件下链接</span></span><br><span class="line"><span class="built_in">cd</span> src</span><br><span class="line"><span class="comment"># 汇编，生成.so文件</span></span><br><span class="line">g++ Swap.cpp -I../include -fPIC -shared -o libSwap.so</span><br><span class="line"><span class="comment"># -fPIC 生成位置无关代码，就是代码没有绝对跳转，都是相对跳转，一般生成动态库都是需要这个的</span></span><br><span class="line"><span class="comment"># -shared 用于生成动态库</span></span><br><span class="line"><span class="comment"># 上面命令等价于以下两条命令</span></span><br><span class="line"><span class="comment">## gcc Swap.cpp -I../include -c -fPIC</span></span><br><span class="line"><span class="comment">## gcc -shared -o libSwap.so Swap.o</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> ..</span><br><span class="line"><span class="comment"># 链接，生成可执行文件</span></span><br><span class="line">g++ main.cpp -Iinclude -Lsrc -lswap -o share_main</span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行可执行文件，需要指定动态库的路径</span></span><br><span class="line">LD_LIBRARY_PATH=src ./share_main</span><br></pre></td></tr></table></figure>
+
+<h3 id="GDB调试（未更新）"><a href="#GDB调试（未更新）" class="headerlink" title="GDB调试（未更新）"></a>GDB调试（未更新）</h3><p>这部分以后再说，因为目前很少会去使用单纯的GDB调试，都是使用Clion或者其他的编辑器中的GDB调试功能。</p>
+<h3 id="CMake"><a href="#CMake" class="headerlink" title="CMake"></a>CMake</h3><ul>
+<li>CMake是一个<strong>跨平台</strong>的安装<strong>编译工具</strong>,可以用简单的语句来描述<strong>所有平台</strong>的安装(编译过程)</li>
+<li>CMakeLists.txt可以自动产生可执行文件需要的Makefile文件等工具</li>
+</ul>
+<h4 id="语法特性"><a href="#语法特性" class="headerlink" title="语法特性"></a>语法特性</h4><ul>
+<li>基本语法格式：指令（参数1 参数2 …）</li>
+<li><ul>
+<li>参数使用<strong>括号</strong>括起</li>
+<li>参数之间使用<strong>空格</strong>或者<strong>分号</strong>分开</li>
+</ul>
+</li>
+<li><strong>指令是大小写无关的，但是参数和变量是大小写相关的</strong></li>
+</ul>
+<figure class="highlight cmake"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 设置变量，大小写是不一样的</span></span><br><span class="line"><span class="keyword">set</span>(HELLO hello.cpp)      </span><br><span class="line"><span class="comment"># 下面两行是一样的效果，因为指令是大小写无关的</span></span><br><span class="line"><span class="keyword">add_executable</span>(hello main.cpp hello.cpp)</span><br><span class="line"><span class="keyword">ADD_EXECUTABLE</span>(hello main.cpp <span class="variable">$&#123;HELLO&#125;</span>)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>变量使用${}方式取值</strong>（这点跟shell脚本差不多），但是在<strong>IF控制语句中需要直接使用变量名</strong></li>
+</ul>
+<h4 id="重要指令"><a href="#重要指令" class="headerlink" title="重要指令"></a>重要指令</h4><h5 id="cmake-minimum-required"><a href="#cmake-minimum-required" class="headerlink" title="cmake_minimum_required"></a>cmake_minimum_required</h5><ul>
+<li><strong>指定CMake的最小版本要求</strong>（一般是文件的第一个指令）</li>
+<li><ul>
+<li>语法：<code>cmake_minimum_required(VERSION versionNumber [FATAL_ERROR])</code></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight cmake"><table><tr><td class="code"><pre><span class="line"><span class="comment"># CMake最小版本要求2.8.3，语法后面的[]是如果不符合版本要求输出什么</span></span><br><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">2.8</span>.<span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+
+<h5 id="project"><a href="#project" class="headerlink" title="project"></a>project</h5><ul>
+<li><strong>定义工程的名称</strong>，也可以指定工程支持的语言</li>
+<li><ul>
+<li>语法：<code>project(projectname [CXX] [C] [Java])</code></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight cmake"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 指定工程名为HELLOWORLD</span></span><br><span class="line"><span class="keyword">project</span>(HELLOWORLD)</span><br></pre></td></tr></table></figure>
+
+<h5 id="set"><a href="#set" class="headerlink" title="set"></a>set</h5><ul>
+<li><strong>显式的定义变量</strong></li>
+<li><ul>
+<li>语法：<code>set(VAR [VALUE] [CACHE TYPE DOCSTRING [FORCE]])</code></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight cmake"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 定义SRC变量,其值为sayhello.cpp hello.cpp</span></span><br><span class="line"><span class="keyword">set</span>(SRC sayhello.cpp hello.cpp)</span><br></pre></td></tr></table></figure>
+
+<h5 id="message"><a href="#message" class="headerlink" title="message"></a>message</h5><ul>
+<li><strong>调试手段，相当于echo/printf</strong>，主要用于查看cmake文件的语法错误</li>
+</ul>
+<figure class="highlight cmake"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 打印cmake中的变量值use_test</span></span><br><span class="line"><span class="keyword">message</span>(<span class="string">&quot;use_test: $&#123;use_test&#125;&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<h5 id="add-definitions"><a href="#add-definitions" class="headerlink" title="add_definitions"></a>add_definitions</h5><ul>
+<li><strong>添加宏定义</strong>（相当于g++编译器中的-D参数）</li>
+</ul>
+<figure class="highlight cmake"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 一般使用在if这种条件编译中</span></span><br><span class="line"><span class="comment"># 在代码中，会运行定义了TEST_DEBUG部分的代码</span></span><br><span class="line"><span class="keyword">if</span> (TEST_DEBUG) </span><br><span class="line">	<span class="keyword">add_definitions</span>(-DTEST_DEBUG)</span><br><span class="line"><span class="keyword">endif</span>(TEST_DEBUG)</span><br></pre></td></tr></table></figure>
+
+<h5 id="list"><a href="#list" class="headerlink" title="list"></a>list</h5><ul>
+<li>list是cmake对数组进行的一系列操作，<a href="https://cmake.org/cmake/help/latest/command/list.html">有很多不同的命令</a></li>
+</ul>
+<figure class="highlight cmake"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 命令很多，仅列举一个</span></span><br><span class="line"><span class="keyword">set</span>( mylist )</span><br><span class="line"><span class="keyword">list</span>( APPEND mylist a )</span><br><span class="line"><span class="keyword">list</span>( APPEND mylist b )</span><br><span class="line"><span class="comment"># 向变量mylist添加数据</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="find-package"><a href="#find-package" class="headerlink" title="find_package"></a>find_package</h5><ul>
+<li>查找系统中的库文件所在位置</li>
+<li><ul>
+<li>语法：<code>find_package(LAPACK REQUIRED)</code></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight cmake"><table><tr><td class="code"><pre><span class="line"><span class="comment"># find_package一般用于opencv等库的查找</span></span><br><span class="line"><span class="keyword">find_package</span>(OpenCV <span class="number">3.0</span> REQUIRED)</span><br><span class="line"><span class="comment"># 然后cmake就会把找到的LAPACK库的路径送给已经定义好的变量中</span></span><br><span class="line"><span class="comment"># 头文件路径给$&#123;LAPACK_INCLUDE_DIRS&#125;</span></span><br><span class="line"><span class="comment"># 库文件路径给$&#123;LAPACK_LIBRARIES&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="include-directories"><a href="#include-directories" class="headerlink" title="include_directories"></a>include_directories</h5><ul>
+<li><strong>向工程添加多个特定的头文件搜索路径</strong>（相当于g++编译器中的-i参数）</li>
+<li><ul>
+<li>语法：<code>include_directories([AFTER|BEFORE] [SYSTEM] dir1 dir2 ...)</code></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight cmake"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 将/usr/include/myincludefolder 和 ./include 添加到头文件搜索路径</span></span><br><span class="line"><span class="keyword">include_directories</span>(/usr/<span class="keyword">include</span>/myincludefolder ./<span class="keyword">include</span>)</span><br></pre></td></tr></table></figure>
+
+<h5 id="link-directories"><a href="#link-directories" class="headerlink" title="link_directories"></a>link_directories</h5><ul>
+<li><strong>向工程中添加多个特定的库文件搜索路径</strong>（相当于g++编译器中的-L参数）</li>
+<li><ul>
+<li>语法：<code>link_directories(dir1 dir2 ...)</code></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight cmake"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 将/usr/lib/mylibfolder 和 ./lib 添加到库文件搜索路径</span></span><br><span class="line"><span class="keyword">link_directories</span>(/usr/lib/mylibfolder ./lib)</span><br></pre></td></tr></table></figure>
+
+<h5 id="add-library"><a href="#add-library" class="headerlink" title="add_library"></a>add_library</h5><ul>
+<li><strong>生成库文件</strong></li>
+<li><ul>
+<li>语法：<code>add_library(libname [SHARED|STATIC|MODULE] [EXCLUDE_FROM_ALL] source1 source2 ... sourceN)</code></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight cmake"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 通过变量 SRC 生成 libhello.so 共享库</span></span><br><span class="line"><span class="keyword">add_library</span>(hello SHARED <span class="variable">$&#123;SRC&#125;</span>)</span><br></pre></td></tr></table></figure>
+
+<h5 id="add-compile-options"><a href="#add-compile-options" class="headerlink" title="add_compile_options"></a>add_compile_options</h5><ul>
+<li><strong>添加编译参数</strong>，就之前g++命令中那些参数都可以添加进来</li>
+<li><ul>
+<li>语法：<code>add_compile_options(&lt;option&gt; ...)</code></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight cmake"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 添加编译参数 -Wall -std=c++11 -O2</span></span><br><span class="line"><span class="keyword">add_compile_options</span>(-Wall -std=c++<span class="number">11</span> -O2)</span><br></pre></td></tr></table></figure>
+
+<h5 id="add-executable"><a href="#add-executable" class="headerlink" title="add_executable"></a>add_executable</h5><ul>
+<li><strong>生成可执行文件</strong></li>
+<li><ul>
+<li>语法：<code>add_executable(exename source1 source2 ...)</code></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight cmake"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 编译main.cpp生成可执行文件main</span></span><br><span class="line"><span class="keyword">add_executable</span>(main main.cpp)</span><br></pre></td></tr></table></figure>
+
+<h5 id="target-link-libraries"><a href="#target-link-libraries" class="headerlink" title="target_link_libraries"></a>target_link_libraries</h5><ul>
+<li><strong>为target添加需要链接的共享库</strong>（相当于g++编译器中的-l参数）</li>
+<li><ul>
+<li>语法：<code>target_link_libraries(target library1&lt;debug | optimized&gt; library2...)</code></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight cmake"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 将hello动态库文件链接到可执行文件main</span></span><br><span class="line"><span class="keyword">target_link_libraries</span>(main hello)</span><br></pre></td></tr></table></figure>
+
+<h5 id="add-subdirectory"><a href="#add-subdirectory" class="headerlink" title="add_subdirectory"></a>add_subdirectory</h5><ul>
+<li><strong>向当前工程添加存放源文件的子目录,并可以指定中间二进制和目标二进制存放的位置</strong>（就是说，当子文件中有CMakeLists.txt文件的时候，需要使用这个指令指定其位置）</li>
+<li><ul>
+<li>语法：<code>add_subdirectory(source_dir [binary_dir] [EXCLUDE_FROM_ALL])</code></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight cmake"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 添加src子目录,src中需有一个CMakeLists.txt</span></span><br><span class="line"><span class="keyword">add_subdirectory</span>(src)</span><br></pre></td></tr></table></figure>
+
+<h5 id="aux-source-directory"><a href="#aux-source-directory" class="headerlink" title="aux_source_directory"></a>aux_source_directory</h5><ul>
+<li><strong>发现一个目录下所有的源代码文件并将列表存储在一个变量中,这个指令临时被用来自动构建源文件列表</strong></li>
+<li><ul>
+<li>语法：<code>aux_source_directory(dir VARIABLE)</code></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight cmake"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 定义SRC变量,其值为当前目录下所有的源代码文件</span></span><br><span class="line"><span class="keyword">aux_source_directory</span>(. SRC)</span><br><span class="line"><span class="comment"># 编译SRC变量所代表的源代码文件,生成main可执行文件</span></span><br><span class="line"><span class="keyword">add_executable</span>(main <span class="variable">$&#123;SRC&#125;</span>)</span><br></pre></td></tr></table></figure>
+
+<h4 id="常用变量"><a href="#常用变量" class="headerlink" title="常用变量"></a>常用变量</h4><ul>
+<li><strong>PROJECT_NAME</strong> -&gt; 定义的工程名称</li>
+<li><strong>CMAKE_C_FLAGS</strong> -&gt; gcc编译选项</li>
+<li><strong>CMAKE_CXX_FLAGS</strong> -&gt; g++编译选项</li>
+</ul>
+<figure class="highlight cmake"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 在CMAKE_CXX_FLAGS编译选项后追加-std=c++11</span></span><br><span class="line"><span class="keyword">set</span>( CMAKE_CXX_FLAGS <span class="string">&quot;$&#123;CMAKE_CXX_FLAGS&#125; -std=c++11&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>CMAKE_BUILD_TYPE</strong> -&gt; 编译类型（debug和release）</li>
+</ul>
+<figure class="highlight cmake"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 设定编译类型为debug,调试时需要选择debug</span></span><br><span class="line"><span class="keyword">set</span>(CMAKE_BUILD_TYPE Debug)</span><br><span class="line"><span class="comment"># 设定编译类型为release,发布时需要选择release</span></span><br><span class="line"><span class="comment"># 设置成release就是使用-O3,并关闭Debug模式</span></span><br><span class="line"><span class="keyword">set</span>(CMAKE_BUILD_TYPE Release)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>CMAKE_SOURCE_DIR</strong> -&gt; 工程顶层目录</li>
+<li><strong>PROJECT_SOURCE_DIR</strong> -&gt; 工程顶层目录</li>
+<li><strong>_SOURCE_DIR</strong> -&gt; 工程顶层目录（上面这三个是一样的）</li>
+</ul>
+]]></content>
+      <categories>
+        <category>基础知识</category>
+      </categories>
+      <tags>
+        <tag>CMake笔记</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>技术分享－OctoMap八叉树建图原理</title>
     <url>/2022/04/14/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB%EF%BC%8D%E5%85%AB%E5%8F%89%E6%A0%91%E5%9C%B0%E5%9B%BE/</url>
     <content><![CDATA[<p>技术分享是课题组大概每一个半月需要我做的环节。这篇文章只是讲述了八叉树建图的原理，并没有涉及到OctoMap库的应用。</p>
