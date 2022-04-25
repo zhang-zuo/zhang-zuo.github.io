@@ -336,7 +336,7 @@
 <li><code>string&amp; operator=(const string &amp;s);</code> 把字符串s赋给当前的字符串</li>
 <li><code>string&amp; operator=(char c);</code> 字符赋值给当前的字符串</li>
 <li><code>string&amp; assign(const char *s);</code> 把字符串s赋给当前的字符串</li>
-<li><code>string&amp; assign(const char *s, int n);</code>  *<strong>把字符串s的前n个字符赋给当前的字符串</strong></li>
+<li><code>string&amp; assign(const char *s, int n);</code>  <strong>*把字符串s的前n个字符赋给当前的字符串</strong></li>
 <li><code>string&amp; assign(const string &amp;s);</code> 把字符串s赋给当前字符串</li>
 <li><code>string&amp; assign(int n, char c);</code> <strong>用n个字符c赋给当前字符串</strong></li>
 </ul>
@@ -348,11 +348,11 @@
 <li>就是在字符串的末尾拼接其他字符串</li>
 <li>函数原型</li>
 <li><ul>
-<li><code>string&amp; operator+=(const char* str);</code> 重载+&#x3D;操作符</li>
-<li><code>string&amp; operator+=(const char c);</code> 重载+&#x3D;操作符</li>
-<li><code>string&amp; operator+=(const string&amp; str);</code> 重载+&#x3D;操作符</li>
-<li><code>string&amp; append(const char *s); </code>字符串s连接到当前字符串结尾</li>
-<li><code>string&amp; append(const char *s, int n);</code>   *<strong>把字符串s的前n个字符连接到当前字符串结尾</strong></li>
+<li><code>string&amp; operator+=(const char* str);</code> 重载+=操作符</li>
+<li><code>string&amp; operator+=(const char c);</code> 重载+=操作符</li>
+<li><code>string&amp; operator+=(const string&amp; str);</code> 重载+=操作符</li>
+<li><code>string&amp; append(const char *s);</code>字符串s连接到当前字符串结尾</li>
+<li><code>string&amp; append(const char *s, int n);</code>   <strong>*把字符串s的前n个字符连接到当前字符串结尾</strong></li>
 <li><code>string&amp; append(const string &amp;s);</code> 也是拼接字符串</li>
 <li><code>string&amp; append(const string &amp;s, int pos, int n);</code> <strong>字符串s从pos开始的n个字符连接到字符串结尾</strong></li>
 </ul>
@@ -365,22 +365,22 @@
 <li>find是从左往右找，rfind是从右往左找，但是返回的都是下标</li>
 <li><ul>
 <li><code>int find(const string&amp; str, int pos = 0) const;</code> 查找str第一次出现位置,从pos开始查找</li>
-<li><code>int find(const char* s, int pos = 0) const; </code>  查找s第一次出现位置,从pos开始查找</li>
-<li><code>int find(const char* s, int pos, int n) const; </code> 从pos位置查找s的前n个字符第一次位置</li>
-<li><code>int find(const char c, int pos = 0) const; </code> 查找字符c第一次出现位置</li>
+<li><code>int find(const char* s, int pos = 0) const;</code>  查找s第一次出现位置,从pos开始查找</li>
+<li><code>int find(const char* s, int pos, int n) const;</code> 从pos位置查找s的前n个字符第一次位置</li>
+<li><code>int find(const char c, int pos = 0) const;</code> 查找字符c第一次出现位置</li>
 <li><code>int rfind(const string&amp; str, int pos = npos) const;</code> 查找str最后一次位置,从pos开始查找</li>
 <li><code>int rfind(const char* s, int pos = npos) const;</code> 查找s最后一次出现位置,从pos开始查找</li>
 <li><code>int rfind(const char* s, int pos, int n) const;</code> 从pos查找s的前n个字符最后一次位置</li>
-<li><code>int rfind(const char c, int pos = 0) const;  </code> 查找字符c最后一次出现位置</li>
+<li><code>int rfind(const char c, int pos = 0) const;</code> 查找字符c最后一次出现位置</li>
 </ul>
 </li>
 <li>替换：在指定的位置替换字符串</li>
 <li><ul>
-<li><code>string&amp; replace(int pos, int n, const string&amp; str); </code> 替换从pos开始n个字符为字符串str</li>
+<li><code>string&amp; replace(int pos, int n, const string&amp; str);</code> 替换从pos开始n个字符为字符串str</li>
 </ul>
 </li>
 <li><ul>
-<li><code>string&amp; replace(int pos, int n,const char* s); </code>                 &#x2F;&#x2F;替换从pos开始的n个字符为字符串s</li>
+<li><code>string&amp; replace(int pos, int n,const char* s);</code>                 //替换从pos开始的n个字符为字符串s</li>
 </ul>
 </li>
 </ul>
@@ -396,7 +396,7 @@
 </li>
 <li>函数原型：</li>
 <li><ul>
-<li><code>int compare(const string &amp;s) const; </code>  与字符串s比较</li>
+<li><code>int compare(const string &amp;s) const;</code>  与字符串s比较</li>
 <li><code>int compare(const char *s) const;</code>  与字符串s比较</li>
 </ul>
 </li>
@@ -406,8 +406,8 @@
 <h4 id="string字符存取"><a href="#string字符存取" class="headerlink" title="string字符存取"></a>string字符存取</h4><ul>
 <li>读取或者存放字符串的方式：</li>
 <li><ul>
-<li><code>char&amp; operator[](int n); </code>  通过[]方式取字符（就是普通的Ｃ语言存取字符串的方式）</li>
-<li><code>char&amp; at(int n);   </code>  通过at方法获取字符</li>
+<li><code>char&amp; operator[](int n);</code>  通过[]方式取字符（就是普通的Ｃ语言存取字符串的方式）</li>
+<li><code>char&amp; at(int n);</code>  通过at方法获取字符</li>
 </ul>
 </li>
 </ul>
@@ -416,10 +416,10 @@
 <h4 id="string插入和删除"><a href="#string插入和删除" class="headerlink" title="string插入和删除"></a>string插入和删除</h4><ul>
 <li>函数原型</li>
 <li><ul>
-<li><code>string&amp; insert(int pos, const char* s);  </code>在pos位置插入字符串</li>
-<li><code>string&amp; insert(int pos, const string&amp; str); </code> 在pos位置插入字符串</li>
+<li><code>string&amp; insert(int pos, const char* s);</code>在pos位置插入字符串</li>
+<li><code>string&amp; insert(int pos, const string&amp; str);</code> 在pos位置插入字符串</li>
 <li><code>string&amp; insert(int pos, int n, char c);</code> 在pos位置插入n个字符c</li>
-<li><code>string&amp; erase(int pos, int n = npos);</code> <strong>删除</strong>从Pos开始的n个字符</li>
+<li><code>string&amp; erase(int pos, int n = npos);</code> <strong>删除</strong>从Pos开始的n个字符 </li>
 </ul>
 </li>
 </ul>
@@ -443,8 +443,8 @@
 <h4 id="vector构造函数"><a href="#vector构造函数" class="headerlink" title="vector构造函数"></a>vector构造函数</h4><ul>
 <li>创建容器的函数原型：</li>
 <li><ul>
-<li><code>vector&lt;T&gt; v; </code>  采用模板实现类实现，默认构造函数</li>
-<li><code>vector(v.begin(), v.end());   </code>  将v[begin(), end())区间中的元素拷贝给本身。以为end是指向最后位置的后面一位，因此这里的区间是左闭右开</li>
+<li><code>vector&lt;T&gt; v;</code>  采用模板实现类实现，默认构造函数</li>
+<li><code>vector(v.begin(), v.end());</code>  将v[begin(), end())区间中的元素拷贝给本身。以为end是指向最后位置的后面一位，因此这里的区间是左闭右开</li>
 <li><code>vector(n, elem);</code> 构造函数将n个elem拷贝给本身。</li>
 <li><code>vector(const vector &amp;vec);</code> 拷贝构造函数。</li>
 </ul>
@@ -455,7 +455,7 @@
 <h4 id="vector赋值"><a href="#vector赋值" class="headerlink" title="vector赋值"></a>vector赋值</h4><ul>
 <li>函数原型：</li>
 <li><ul>
-<li><code>vector&amp; operator=(const vector &amp;vec);</code>重载&#x3D;操作符</li>
+<li><code>vector&amp; operator=(const vector &amp;vec);</code>重载=操作符</li>
 <li><code>assign(beg, end);</code>   将[beg, end)区间中的数据拷贝赋值给本身。</li>
 <li><code>assign(n, elem);</code>   将n个elem拷贝赋值给本身</li>
 </ul>
@@ -466,7 +466,7 @@
 <h4 id="vector容量和大小"><a href="#vector容量和大小" class="headerlink" title="vector容量和大小"></a>vector容量和大小</h4><ul>
 <li>对vector容器的容量和大小操作，函数原型：</li>
 <li><ul>
-<li><code>empty(); </code> 判断容器是否为空</li>
+<li><code>empty();</code> 判断容器是否为空</li>
 <li><code>capacity();</code> 容器的容量</li>
 <li><code>size();</code> 返回容器中元素的个数</li>
 <li><code>resize(int num);</code>  重新指定容器的长度为num，若容器变长，则以默认值填充新位置。如果容器变短，则超出容器长度的元素被删除。</li>
@@ -494,9 +494,9 @@
 <h4 id="vector数据存取"><a href="#vector数据存取" class="headerlink" title="vector数据存取"></a>vector数据存取</h4><ul>
 <li>函数原型：</li>
 <li><ul>
-<li><code>at(int idx); </code>     返回索引idx所指的数据</li>
-<li><code>operator[]; </code>       返回索引idx所指的数据</li>
-<li><code>front(); </code>            返回容器中第一个数据元素</li>
+<li><code>at(int idx);</code>     返回索引idx所指的数据</li>
+<li><code>operator[];</code>       返回索引idx所指的数据</li>
+<li><code>front();</code>            返回容器中第一个数据元素</li>
 <li><code>back();</code>              返回容器中最后一个数据元素</li>
 <li>注：之前的begin和end都是指针，指向的第一个和最后一个＋１的位置，想要看具体的数据元素需要解引用；而现在的front和back是直接返回的具体的数据元素</li>
 </ul>
@@ -516,8 +516,8 @@
 <ul>
 <li><code>vector&lt;int&gt;(v).swap(v);</code> 解读</li>
 <li><ul>
-<li><code>vector&lt;int&gt;(v)</code>是一个匿名对象，也就是说这里创建了一个匿名的容器对象，拷贝的v的容器，这个匿名的容器size&#x3D;3,capacity&#x3D;3</li>
-<li>匿名对象经过swap交换后，v的容器内容就是匿名对象的内容，此时v的size&#x3D;3,capacity&#x3D;3</li>
+<li><code>vector&lt;int&gt;(v)</code>是一个匿名对象，也就是说这里创建了一个匿名的容器对象，拷贝的v的容器，这个匿名的容器size=3,capacity=3</li>
+<li>匿名对象经过swap交换后，v的容器内容就是匿名对象的内容，此时v的size=3,capacity=3</li>
 <li>因为匿名对象的特性，这行代码运行结束后，匿名对象就直接被释放了，因此，最后就剩下了v，而v的内存也就实现了缩小</li>
 </ul>
 </li>
@@ -562,7 +562,7 @@
 <h4 id="deque赋值"><a href="#deque赋值" class="headerlink" title="deque赋值"></a>deque赋值</h4><ul>
 <li>函数原型（跟vector一模一样）</li>
 <li><ul>
-<li><code>deque&amp; operator=(const deque &amp;deq); </code>  重载等号操作符</li>
+<li><code>deque&amp; operator=(const deque &amp;deq);</code>  重载等号操作符</li>
 <li><code>assign(beg, end);</code>  将[beg, end)区间中的数据拷贝赋值给本身。</li>
 <li><code>assign(n, elem);</code>   将n个elem拷贝赋值给本身。</li>
 </ul>
@@ -580,18 +580,17 @@
 </li>
 </ul>
 <h4 id="deque插入和删除"><a href="#deque插入和删除" class="headerlink" title="deque插入和删除"></a>deque插入和删除</h4><ul>
-<li><p>函数原型（大体上与vector差不多，就是insert多了一个功能）</p>
-</li>
-<li><p>两端插入操作：</p>
-<ul>
+<li>函数原型（大体上与vector差不多，就是insert多了一个功能）</li>
+<li>两端插入操作：<ul>
 <li><code>push_back(elem);</code>    在容器尾部添加一个数据</li>
 <li><code>push_front(elem);</code>  在容器头部插入一个数据</li>
 <li><code>pop_back();</code>               删除容器最后一个数据</li>
 <li><code>pop_front();</code>             删除容器第一个数据</li>
 </ul>
 </li>
-<li><p>指定位置操作：</p>
+</ul>
 <ul>
+<li>指定位置操作：<ul>
 <li><code>insert(pos,elem);</code> 在pos位置插入elem元素，<strong>返回新数据位置</strong>。</li>
 <li><code>insert(pos,n,elem);</code>  在pos位置插入n个elem数据，<strong>无返回值</strong>。</li>
 <li><code>insert(pos,beg,end);</code>  在pos位置插入[beg,end)区间的数据，<strong>无返回值</strong>。</li>
@@ -606,9 +605,9 @@
 <h4 id="deque数据存取"><a href="#deque数据存取" class="headerlink" title="deque数据存取"></a>deque数据存取</h4><ul>
 <li>函数原型（跟vector一模一样）</li>
 <li><ul>
-<li><code>at(int idx); </code>   返回索引idx所指的数据</li>
-<li><code>operator[]; </code>     返回索引idx所指的数据（就平常读取数组的方式）</li>
-<li><code>front(); </code>           返回容器中第一个数据元素</li>
+<li><code>at(int idx);</code>   返回索引idx所指的数据</li>
+<li><code>operator[];</code>     返回索引idx所指的数据（就平常读取数组的方式）</li>
+<li><code>front();</code>           返回容器中第一个数据元素</li>
 <li><code>back();</code>             返回容器中最后一个数据元素</li>
 </ul>
 </li>
@@ -643,12 +642,12 @@
 <li>数据存取：<ul>
 <li><code>push(elem);</code>    向栈顶添加元素</li>
 <li><code>pop();</code>               从栈顶移除第一个元素</li>
-<li><code>top(); </code>               返回栈顶元素</li>
+<li><code>top();</code>               返回栈顶元素</li>
 </ul>
 </li>
 <li>大小操作：<ul>
 <li><code>empty();</code>           判断堆栈是否为空</li>
-<li><code>size(); </code>             返回栈的大小</li>
+<li><code>size();</code>             返回栈的大小</li>
 </ul>
 </li>
 </ul>
@@ -677,12 +676,12 @@
 <li><code>push(elem);</code>    往队尾添加元素</li>
 <li><code>pop();</code>               从队头移除第一个元素</li>
 <li><code>back();</code>             返回最后一个元素</li>
-<li><code>front(); </code>           返回第一个元素</li>
+<li><code>front();</code>           返回第一个元素</li>
 </ul>
 </li>
 <li>大小操作：<ul>
 <li><code>empty();</code>           判断堆栈是否为空</li>
-<li><code>size(); </code>             返回栈的大小</li>
+<li><code>size();</code>             返回栈的大小</li>
 </ul>
 </li>
 </ul>
@@ -733,10 +732,10 @@
 <h4 id="list大小操作"><a href="#list大小操作" class="headerlink" title="list大小操作"></a>list大小操作</h4><ul>
 <li>函数原型：（跟vector一样）</li>
 <li><ul>
-<li><code>size(); </code> 返回容器中元素的个数</li>
-<li><code>empty(); </code>   判断容器是否为空</li>
+<li><code>size();</code> 返回容器中元素的个数</li>
+<li><code>empty();</code>   判断容器是否为空</li>
 <li><code>resize(num);</code>  重新指定容器的长度为num，若容器变长，则以默认值填充新位置。如果容器变短，则末尾超出容器长度的元素被删除。</li>
-<li><code>resize(num, elem); </code>   重新指定容器的长度为num，若容器变长，则以elem值填充新位置。如果容器变短，则末尾超出容器长度的元素被删除。</li>
+<li><code>resize(num, elem);</code>   重新指定容器的长度为num，若容器变长，则以elem值填充新位置。如果容器变短，则末尾超出容器长度的元素被删除。</li>
 </ul>
 </li>
 </ul>
@@ -778,7 +777,7 @@
 </ul>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//反转和排序</span></span><br><span class="line"><span class="comment">//下面这个是指定排序规则</span></span><br><span class="line"><span class="comment">//如果自定义的数据需要排序，可以将形参换成类，然后自定义排序规则</span></span><br><span class="line"><span class="comment">//需要返回bool的值</span></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">myCompare</span><span class="params">(<span class="type">int</span> val1 , <span class="type">int</span> val2)</span></span>&#123;</span><br><span class="line">    <span class="comment">//如果要降序，那么就要前一个数　&gt; 后一个数</span></span><br><span class="line">	<span class="keyword">return</span> val1 &gt; val2;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">test01</span><span class="params">()</span></span>&#123;</span><br><span class="line">	list&lt;<span class="type">int</span>&gt; L;</span><br><span class="line">	L.<span class="built_in">push_back</span>(<span class="number">90</span>);</span><br><span class="line">	L.<span class="built_in">push_back</span>(<span class="number">30</span>);</span><br><span class="line">	L.<span class="built_in">push_back</span>(<span class="number">20</span>);</span><br><span class="line">	<span class="comment">//反转容器的元素</span></span><br><span class="line">	L.<span class="built_in">reverse</span>();</span><br><span class="line">	<span class="comment">//排序</span></span><br><span class="line">    <span class="comment">//这里不能使用sort(L.begin(),L.end())</span></span><br><span class="line">    <span class="comment">//因为L不能随机访问，不能时候全局的排序函数，而应该使用自身的</span></span><br><span class="line">	L.<span class="built_in">sort</span>(); <span class="comment">//默认的排序规则 从小到大</span></span><br><span class="line">	<span class="comment">//需要使用myCompare自定义函数，自定义升序还是降序</span></span><br><span class="line">	L.<span class="built_in">sort</span>(myCompare); <span class="comment">//指定规则，从大到小，降序</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="set-x2F-multiset容器"><a href="#set-x2F-multiset容器" class="headerlink" title="set&#x2F;multiset容器"></a>set&#x2F;multiset容器</h3><ul>
+<h3 id="set-multiset容器"><a href="#set-multiset容器" class="headerlink" title="set/multiset容器"></a>set/multiset容器</h3><ul>
 <li>所有元素都会在插入时自动被排序</li>
 <li>set和multiset区别：<ul>
 <li>set不允许容器中有重复的元素，因此向set容器中插入重复数据会失效</li>
@@ -794,7 +793,7 @@
 </ul>
 </li>
 <li>赋值：<ul>
-<li><code>set&amp; operator=(const set &amp;st);</code>    &#x2F;&#x2F;重载等号操作符</li>
+<li><code>set&amp; operator=(const set &amp;st);</code>    //重载等号操作符</li>
 </ul>
 </li>
 </ul>
@@ -857,7 +856,7 @@
 
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//set存放自定义数据类型</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Person</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="built_in">Person</span>(string name, <span class="type">int</span> age)&#123;</span><br><span class="line">		<span class="keyword">this</span>-&gt;m_Name = name;</span><br><span class="line">		<span class="keyword">this</span>-&gt;m_Age = age;</span><br><span class="line">	&#125;</span><br><span class="line">	string m_Name;</span><br><span class="line">	<span class="type">int</span> m_Age;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//下面是自定义排序规则</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">comparePerson</span>&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="type">bool</span> <span class="title">operator</span><span class="params">()</span><span class="params">(<span class="type">const</span> Person&amp; p1, <span class="type">const</span> Person &amp;p2)</span></span>&#123;</span><br><span class="line">		<span class="comment">//按照年龄进行排序  降序</span></span><br><span class="line">		<span class="keyword">return</span> p1.m_Age &gt; p2.m_Age;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">test01</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="comment">//存放自定义的数据类型，编译器并不知道该怎么排序</span></span><br><span class="line">    <span class="comment">//因此，一般自定义的数据类型都需要自定义排序规则</span></span><br><span class="line">	set&lt;Person, comparePerson&gt; s;</span><br><span class="line">	<span class="function">Person <span class="title">p1</span><span class="params">(<span class="string">&quot;刘备&quot;</span>, <span class="number">23</span>)</span></span>;</span><br><span class="line">	<span class="function">Person <span class="title">p2</span><span class="params">(<span class="string">&quot;关羽&quot;</span>, <span class="number">27</span>)</span></span>;</span><br><span class="line">	<span class="function">Person <span class="title">p3</span><span class="params">(<span class="string">&quot;张飞&quot;</span>, <span class="number">25</span>)</span></span>;</span><br><span class="line">	<span class="function">Person <span class="title">p4</span><span class="params">(<span class="string">&quot;赵云&quot;</span>, <span class="number">21</span>)</span></span>;</span><br><span class="line">	s.<span class="built_in">insert</span>(p1);</span><br><span class="line">	s.<span class="built_in">insert</span>(p2);</span><br><span class="line">	s.<span class="built_in">insert</span>(p3);</span><br><span class="line">	s.<span class="built_in">insert</span>(p4);</span><br><span class="line">    <span class="comment">//注意下面的迭代器也需要写出comparePerson仿函数</span></span><br><span class="line">	<span class="keyword">for</span> (set&lt;Person, comparePerson&gt;::iterator it = s.<span class="built_in">begin</span>(); it != s.<span class="built_in">end</span>(); it++)&#123;</span><br><span class="line">		cout &lt;&lt; <span class="string">&quot;姓名： &quot;</span> &lt;&lt; it-&gt;m_Name &lt;&lt; <span class="string">&quot; 年龄： &quot;</span> &lt;&lt; it-&gt;m_Age &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="map-x2F-multimap容器"><a href="#map-x2F-multimap容器" class="headerlink" title="map&#x2F;multimap容器"></a>map&#x2F;multimap容器</h3><ul>
+<h3 id="map-multimap容器"><a href="#map-multimap容器" class="headerlink" title="map/multimap容器"></a>map/multimap容器</h3><ul>
 <li>map中所有元素都是pair，也就是对组</li>
 <li>pair中第一个元素为key（键值），起到索引作用，第二个元素为value（实值），这既是键值对</li>
 <li>所有元素都会根据元素的键值<strong>自动排序</strong>。注意：是根据键值排序而不是实值排序</li>
@@ -971,7 +970,10 @@
     <a href="/2022/04/08/C++%E7%AC%94%E8%AE%B0%EF%BC%88%E5%9B%9B%EF%BC%89%E6%A8%A1%E6%9D%BF/" rel="prev" title="C++笔记（四）模板">
       <i class="fa fa-chevron-left"></i> C++笔记（四）模板
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2022/04/14/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB%EF%BC%8D%E5%85%AB%E5%8F%89%E6%A0%91%E5%9C%B0%E5%9B%BE/" rel="next" title="技术分享－OctoMap八叉树建图原理">
+      技术分享－OctoMap八叉树建图原理 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -1030,7 +1032,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#STL%E5%88%9D%E8%AF%86"><span class="nav-text">STL初识</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#STL%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-text">STL基本概念</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#STL%E5%85%AD%E5%A4%A7%E7%BB%84%E4%BB%B6"><span class="nav-text">STL六大组件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%B9%E5%99%A8%E3%80%81%E7%AE%97%E6%B3%95%E3%80%81%E8%BF%AD%E4%BB%A3%E5%99%A8"><span class="nav-text">容器、算法、迭代器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%B9%E5%99%A8%E7%AE%97%E6%B3%95%E8%BF%AD%E4%BB%A3%E5%99%A8%E5%88%9D%E8%AF%86"><span class="nav-text">容器算法迭代器初识</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#vector%E5%AD%98%E6%94%BE%E5%86%85%E7%BD%AE%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-text">vector存放内置数据类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vector%E5%AD%98%E6%94%BE%E8%87%AA%E5%AE%9A%E4%B9%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-text">vector存放自定义数据类型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#string%E5%AE%B9%E5%99%A8"><span class="nav-text">string容器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#string%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-text">string构造函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#string%E8%B5%8B%E5%80%BC"><span class="nav-text">string赋值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#string%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%8B%BC%E6%8E%A5"><span class="nav-text">string字符串拼接</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#string%E6%9F%A5%E6%89%BE%E5%92%8C%E6%9B%BF%E6%8D%A2"><span class="nav-text">string查找和替换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#string%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%AF%94%E8%BE%83"><span class="nav-text">string字符串比较</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#string%E5%AD%97%E7%AC%A6%E5%AD%98%E5%8F%96"><span class="nav-text">string字符存取</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#string%E6%8F%92%E5%85%A5%E5%92%8C%E5%88%A0%E9%99%A4"><span class="nav-text">string插入和删除</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#string%E5%AD%90%E4%B8%B2"><span class="nav-text">string子串</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vector%E5%AE%B9%E5%99%A8"><span class="nav-text">vector容器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#vector%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-text">vector构造函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vector%E8%B5%8B%E5%80%BC"><span class="nav-text">vector赋值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vector%E5%AE%B9%E9%87%8F%E5%92%8C%E5%A4%A7%E5%B0%8F"><span class="nav-text">vector容量和大小</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vector%E6%8F%92%E5%85%A5%E5%92%8C%E5%88%A0%E9%99%A4"><span class="nav-text">vector插入和删除</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vector%E6%95%B0%E6%8D%AE%E5%AD%98%E5%8F%96"><span class="nav-text">vector数据存取</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vector%E4%BA%92%E6%8D%A2%E5%AE%B9%E5%99%A8"><span class="nav-text">vector互换容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vector%E9%A2%84%E7%95%99%E7%A9%BA%E9%97%B4"><span class="nav-text">vector预留空间</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#deque%E5%AE%B9%E5%99%A8"><span class="nav-text">deque容器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#deque%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-text">deque构造函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#deque%E8%B5%8B%E5%80%BC"><span class="nav-text">deque赋值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#deque%E5%A4%A7%E5%B0%8F%E6%93%8D%E4%BD%9C"><span class="nav-text">deque大小操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#deque%E6%8F%92%E5%85%A5%E5%92%8C%E5%88%A0%E9%99%A4"><span class="nav-text">deque插入和删除</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#deque%E6%95%B0%E6%8D%AE%E5%AD%98%E5%8F%96"><span class="nav-text">deque数据存取</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#deque%E6%8E%92%E5%BA%8F"><span class="nav-text">deque排序</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#stack%E5%AE%B9%E5%99%A8%EF%BC%88%E6%A0%88%E5%AE%B9%E5%99%A8%EF%BC%89"><span class="nav-text">stack容器（栈容器）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#stack%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-text">stack基本概念</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#stack%E5%B8%B8%E7%94%A8%E6%8E%A5%E5%8F%A3"><span class="nav-text">stack常用接口</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#queue%E5%AE%B9%E5%99%A8%EF%BC%88%E9%98%9F%E5%88%97%E5%AE%B9%E5%99%A8%EF%BC%89"><span class="nav-text">queue容器（队列容器）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#queue%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-text">queue基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#queue%E5%B8%B8%E7%94%A8%E6%8E%A5%E5%8F%A3"><span class="nav-text">queue常用接口</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#list%E5%AE%B9%E5%99%A8%EF%BC%88%E9%93%BE%E8%A1%A8%EF%BC%89"><span class="nav-text">list容器（链表）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#list%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-text">list基本概念</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#list%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-text">list构造函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#list%E8%B5%8B%E5%80%BC%E5%92%8C%E4%BA%A4%E6%8D%A2"><span class="nav-text">list赋值和交换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#list%E5%A4%A7%E5%B0%8F%E6%93%8D%E4%BD%9C"><span class="nav-text">list大小操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#list%E6%8F%92%E5%85%A5%E5%92%8C%E5%88%A0%E9%99%A4"><span class="nav-text">list插入和删除</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#list%E6%95%B0%E6%8D%AE%E5%AD%98%E5%8F%96"><span class="nav-text">list数据存取</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#list%E5%8F%8D%E8%BD%AC%E5%92%8C%E6%8E%92%E5%BA%8F"><span class="nav-text">list反转和排序</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#set-x2F-multiset%E5%AE%B9%E5%99%A8"><span class="nav-text">set&#x2F;multiset容器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#set%E6%9E%84%E9%80%A0%E5%92%8C%E8%B5%8B%E5%80%BC"><span class="nav-text">set构造和赋值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#set%E5%A4%A7%E5%B0%8F%E5%92%8C%E4%BA%A4%E6%8D%A2"><span class="nav-text">set大小和交换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#set%E6%8F%92%E5%85%A5%E5%92%8C%E5%88%A0%E9%99%A4"><span class="nav-text">set插入和删除</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#set%E6%9F%A5%E6%89%BE%E5%92%8C%E7%BB%9F%E8%AE%A1"><span class="nav-text">set查找和统计</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#set%E5%92%8Cmultiset%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">set和multiset的区别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#pair%E5%AF%B9%E7%BB%84%E5%88%9B%E5%BB%BA"><span class="nav-text">pair对组创建</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#set%E5%AE%B9%E5%99%A8%E6%8E%92%E5%BA%8F"><span class="nav-text">set容器排序</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#map-x2F-multimap%E5%AE%B9%E5%99%A8"><span class="nav-text">map&#x2F;multimap容器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#map%E6%9E%84%E9%80%A0%E5%92%8C%E8%B5%8B%E5%80%BC"><span class="nav-text">map构造和赋值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#map%E5%A4%A7%E5%B0%8F%E5%92%8C%E4%BA%A4%E6%8D%A2"><span class="nav-text">map大小和交换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#map%E6%8F%92%E5%85%A5%E5%92%8C%E5%88%A0%E9%99%A4"><span class="nav-text">map插入和删除</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#map%E6%9F%A5%E6%89%BE%E5%92%8C%E7%BB%9F%E8%AE%A1"><span class="nav-text">map查找和统计</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#map%E5%AE%B9%E5%99%A8%E6%8E%92%E5%BA%8F"><span class="nav-text">map容器排序</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#STL%E5%88%9D%E8%AF%86"><span class="nav-text">STL初识</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#STL%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-text">STL基本概念</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#STL%E5%85%AD%E5%A4%A7%E7%BB%84%E4%BB%B6"><span class="nav-text">STL六大组件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%B9%E5%99%A8%E3%80%81%E7%AE%97%E6%B3%95%E3%80%81%E8%BF%AD%E4%BB%A3%E5%99%A8"><span class="nav-text">容器、算法、迭代器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%B9%E5%99%A8%E7%AE%97%E6%B3%95%E8%BF%AD%E4%BB%A3%E5%99%A8%E5%88%9D%E8%AF%86"><span class="nav-text">容器算法迭代器初识</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#vector%E5%AD%98%E6%94%BE%E5%86%85%E7%BD%AE%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-text">vector存放内置数据类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vector%E5%AD%98%E6%94%BE%E8%87%AA%E5%AE%9A%E4%B9%89%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-text">vector存放自定义数据类型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#string%E5%AE%B9%E5%99%A8"><span class="nav-text">string容器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#string%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-text">string构造函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#string%E8%B5%8B%E5%80%BC"><span class="nav-text">string赋值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#string%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%8B%BC%E6%8E%A5"><span class="nav-text">string字符串拼接</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#string%E6%9F%A5%E6%89%BE%E5%92%8C%E6%9B%BF%E6%8D%A2"><span class="nav-text">string查找和替换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#string%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%AF%94%E8%BE%83"><span class="nav-text">string字符串比较</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#string%E5%AD%97%E7%AC%A6%E5%AD%98%E5%8F%96"><span class="nav-text">string字符存取</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#string%E6%8F%92%E5%85%A5%E5%92%8C%E5%88%A0%E9%99%A4"><span class="nav-text">string插入和删除</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#string%E5%AD%90%E4%B8%B2"><span class="nav-text">string子串</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vector%E5%AE%B9%E5%99%A8"><span class="nav-text">vector容器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#vector%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-text">vector构造函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vector%E8%B5%8B%E5%80%BC"><span class="nav-text">vector赋值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vector%E5%AE%B9%E9%87%8F%E5%92%8C%E5%A4%A7%E5%B0%8F"><span class="nav-text">vector容量和大小</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vector%E6%8F%92%E5%85%A5%E5%92%8C%E5%88%A0%E9%99%A4"><span class="nav-text">vector插入和删除</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vector%E6%95%B0%E6%8D%AE%E5%AD%98%E5%8F%96"><span class="nav-text">vector数据存取</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vector%E4%BA%92%E6%8D%A2%E5%AE%B9%E5%99%A8"><span class="nav-text">vector互换容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vector%E9%A2%84%E7%95%99%E7%A9%BA%E9%97%B4"><span class="nav-text">vector预留空间</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#deque%E5%AE%B9%E5%99%A8"><span class="nav-text">deque容器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#deque%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-text">deque构造函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#deque%E8%B5%8B%E5%80%BC"><span class="nav-text">deque赋值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#deque%E5%A4%A7%E5%B0%8F%E6%93%8D%E4%BD%9C"><span class="nav-text">deque大小操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#deque%E6%8F%92%E5%85%A5%E5%92%8C%E5%88%A0%E9%99%A4"><span class="nav-text">deque插入和删除</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#deque%E6%95%B0%E6%8D%AE%E5%AD%98%E5%8F%96"><span class="nav-text">deque数据存取</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#deque%E6%8E%92%E5%BA%8F"><span class="nav-text">deque排序</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#stack%E5%AE%B9%E5%99%A8%EF%BC%88%E6%A0%88%E5%AE%B9%E5%99%A8%EF%BC%89"><span class="nav-text">stack容器（栈容器）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#stack%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-text">stack基本概念</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#stack%E5%B8%B8%E7%94%A8%E6%8E%A5%E5%8F%A3"><span class="nav-text">stack常用接口</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#queue%E5%AE%B9%E5%99%A8%EF%BC%88%E9%98%9F%E5%88%97%E5%AE%B9%E5%99%A8%EF%BC%89"><span class="nav-text">queue容器（队列容器）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#queue%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-text">queue基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#queue%E5%B8%B8%E7%94%A8%E6%8E%A5%E5%8F%A3"><span class="nav-text">queue常用接口</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#list%E5%AE%B9%E5%99%A8%EF%BC%88%E9%93%BE%E8%A1%A8%EF%BC%89"><span class="nav-text">list容器（链表）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#list%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-text">list基本概念</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#list%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-text">list构造函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#list%E8%B5%8B%E5%80%BC%E5%92%8C%E4%BA%A4%E6%8D%A2"><span class="nav-text">list赋值和交换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#list%E5%A4%A7%E5%B0%8F%E6%93%8D%E4%BD%9C"><span class="nav-text">list大小操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#list%E6%8F%92%E5%85%A5%E5%92%8C%E5%88%A0%E9%99%A4"><span class="nav-text">list插入和删除</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#list%E6%95%B0%E6%8D%AE%E5%AD%98%E5%8F%96"><span class="nav-text">list数据存取</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#list%E5%8F%8D%E8%BD%AC%E5%92%8C%E6%8E%92%E5%BA%8F"><span class="nav-text">list反转和排序</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#set-multiset%E5%AE%B9%E5%99%A8"><span class="nav-text">set&#x2F;multiset容器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#set%E6%9E%84%E9%80%A0%E5%92%8C%E8%B5%8B%E5%80%BC"><span class="nav-text">set构造和赋值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#set%E5%A4%A7%E5%B0%8F%E5%92%8C%E4%BA%A4%E6%8D%A2"><span class="nav-text">set大小和交换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#set%E6%8F%92%E5%85%A5%E5%92%8C%E5%88%A0%E9%99%A4"><span class="nav-text">set插入和删除</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#set%E6%9F%A5%E6%89%BE%E5%92%8C%E7%BB%9F%E8%AE%A1"><span class="nav-text">set查找和统计</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#set%E5%92%8Cmultiset%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">set和multiset的区别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#pair%E5%AF%B9%E7%BB%84%E5%88%9B%E5%BB%BA"><span class="nav-text">pair对组创建</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#set%E5%AE%B9%E5%99%A8%E6%8E%92%E5%BA%8F"><span class="nav-text">set容器排序</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#map-multimap%E5%AE%B9%E5%99%A8"><span class="nav-text">map&#x2F;multimap容器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#map%E6%9E%84%E9%80%A0%E5%92%8C%E8%B5%8B%E5%80%BC"><span class="nav-text">map构造和赋值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#map%E5%A4%A7%E5%B0%8F%E5%92%8C%E4%BA%A4%E6%8D%A2"><span class="nav-text">map大小和交换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#map%E6%8F%92%E5%85%A5%E5%92%8C%E5%88%A0%E9%99%A4"><span class="nav-text">map插入和删除</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#map%E6%9F%A5%E6%89%BE%E5%92%8C%E7%BB%9F%E8%AE%A1"><span class="nav-text">map查找和统计</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#map%E5%AE%B9%E5%99%A8%E6%8E%92%E5%BA%8F"><span class="nav-text">map容器排序</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -1046,20 +1048,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-count">8</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1107,13 +1109,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">71k</span>
+    <span title="站点总字数">94k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">2:09</span>
+    <span title="站点阅读时长">2:51</span>
 </div>
 
         
@@ -1168,6 +1170,8 @@
 
 
 
+
+  
 
   
 
