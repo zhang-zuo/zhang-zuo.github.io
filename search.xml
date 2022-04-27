@@ -2342,6 +2342,156 @@
       </tags>
   </entry>
   <entry>
+    <title>技术分享－OctoMap八叉树建图原理</title>
+    <url>/2022/04/14/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB%EF%BC%8D%E5%85%AB%E5%8F%89%E6%A0%91%E5%9C%B0%E5%9B%BE/</url>
+    <content><![CDATA[<p>技术分享是课题组大概每一个半月需要我做的环节。这篇文章只是讲述了八叉树建图的原理，并没有涉及到OctoMap库的应用。</p>
+<span id="more"></span>
+
+<blockquote>
+<p>论文：OctoMap:An Efficient Probabilistic 3D Mapping Framework Based on Octrees</p>
+</blockquote>
+<h3 id="OctoMap建图框架"><a href="#OctoMap建图框架" class="headerlink" title="OctoMap建图框架"></a>OctoMap建图框架</h3><h4 id="八叉树原理"><a href="#八叉树原理" class="headerlink" title="八叉树原理"></a>八叉树原理</h4><p><u>这部分主要讲解八叉树是什么？</u></p>
+<p>八叉树就是一个空间构造地图的方法，其基本思想就是递归地把空间分成八个方块。当你想要找到空间中一个点块时，就不断地将分解的空间块再次分成8块，直到找到你要寻找的“点块”的大小为止。这些立方块在内存中以八叉树的结构组织起来，每个树的节点对应于空间中的一个立方块，每个立方块称为体素。在达到给定的最小体素大小之前（也称为叶子节点），这个空间会被连续细分为8个子空间。可以通过下面的图片对八叉树有个基本的认识：</p>
+<img src="https://s2.loli.net/2022/04/14/OaG48kC6KyYtUSF.png" alt="" style="zoom: 67%;" />
+
+<p>空间中一个节点（体素）的状态一共有三种：<strong>占据，空闲和未知</strong>，如果我们使用离散标签（0,1）来对每个节点表示这三种状态，那么当某一节点下的子节点的状态是相同的时候（子节点都被占据、都是空闲或者都是不确定），就可以将这些子节点修剪掉，只保留父节点，从而节省内存。</p>
+<p>对于空间中的三种状态中，未知和空闲是相对模糊的概念（因为我们一般得到的观测数据都是占据与否，而没有未知和空闲），为了解决这个问题，就需要显式地表示空闲体素，这些空闲体素是在传感器和被测点之间的区域创建（因为被测点和传感器之间一定是无遮挡的），例如，沿着激光发射方向，在传感器中心和激光击中的点的连线上所有体素都是空闲状态。</p>
+<p>八叉树中有一个分辨率的概念：<strong>最小的体素（立方块）大小就是分辨率</strong>。例如，我们定义1cm的分辨率（程序中单位是m），那么在最大深度为16的八叉树地图中（深度一般为16也可以为32），就指定了这个地图的空间大小是655.35$m^3$ 。</p>
+<h4 id="概率信息融合"><a href="#概率信息融合" class="headerlink" title="概率信息融合"></a>概率信息融合</h4><p><u>这一部分主要讲解的是对于叶子节点（空间中的最小体素），应该有什么信息表示它的空间状态？</u></p>
+<h5 id="概率更新模型"><a href="#概率更新模型" class="headerlink" title="概率更新模型"></a>概率更新模型</h5><p>仅仅使用离散的标签不能够应用于测量的噪声数据，应该使用0~1之间的数值表示，也就是概率模型。使用概率数值对体素的占据与否进行判断，<strong>概率值越高，这个体素被占据的可能性越大</strong>。而这个概率模型在论文中如下：<br>$$<br>P(n|z_{1:t})=<br>[1+\frac{1-P(n|z_t)}{P(n|z_t)}\frac{1-P(n|z_{1:t-1})}{P(n|z_{1:t-1})}\frac{P(n)}{1-P(n)}]^{-1}<br>$$<br>对上面的公式进行简单的解读：</p>
+<ul>
+<li><p>上面公式是通过2D栅格地图推导的，先对上面的公式符号有所了解：</p>
+</li>
+<li><ul>
+<li>$P(n|z_{1:t})$ ：是在观测数据为$｛z_1,z_2…z_t｝$ （其中t是时刻）下判断$n$叶子节点为占据的概率</li>
+<li>$P(n)$ ：是在未观测前叶子节点是否被占据的先验概率，一般我们基于均匀假设认为空间中一个叶子节点被占据是均匀分布的，所以$P(n)＝0.5$ </li>
+</ul>
+</li>
+<li><p>下面是2D栅格地图的推导，同样适用于在3D地图中：</p>
+</li>
+<li><ul>
+<li>通过贝叶斯法则和马尔科夫性，推理节点的占据概率（后验概率）计算过程：</li>
+<li><ul>
+<li>其中$x_{1:t}$ 是指1~t时刻的机器人位姿集合，因为对于建图来说，并不考虑当前的位姿状态，因此下面的公式中会出现去掉$x_t$的情况</li>
+</ul>
+</li>
+</ul>
+<p>$$<br>\begin{align}<br>P(m_i|x_{1:t},z_{1:t})<br>&amp;=\frac{P(z_t|m_i,z_{1:t-1},x_{1:t})P(m_i|z_{1:t-1},x_{1:t})}{P(z_t|z_{1:t-1},x_{1:t-1})}\\\<br>&amp;=\frac{P(z_t|m_i,x_t)P(m_i|z_{1:t-1},x_{1:t-1})} {P(z_i|z_{1:t-1},x_{1:t-1})}\\\<br>&amp;=\frac{P(m_i|z_t,x_t)P(z_t|x_t)P(m_i|z_{1:t-1},x_{1:t-1})} {P(m_i|x_t)P(z_t|z_{1:t-1},x_{1:t-1})}\\\<br>&amp;=\frac{P(m_i|z_t,x_t)P(z_t|x_t)P(m_i|z_{1:t-1},x_{1:t-1})} {P(m_i)P(z_t|z_{1:t-1},x_{1:t-1})}<br>\end{align}<br>$$</p>
+<ul>
+<li>由于上面公式不好计算，引入了几率模型（$Odd$）:</li>
+</ul>
+<p>$$<br>Odd(A) = \frac{p}{1-p}<br>$$</p>
+<ul>
+<li>那么就需要得到节点占据概率的反状态，也就是节点的空闲概率：</li>
+</ul>
+<p>$$<br>P(\hat{m_i}|z_{1:t},x_{1:t})<br>=\frac{P(\hat{m_i}|z_t,x_t)P(z_t|x_t)P(\hat{m_i}|z_{1:t-1},x_{1:t-1})}{P(\hat{m_i})P(z_i|z_{1:t-1},x_{1:t-1})}<br>$$</p>
+<ul>
+<li>经过几率模型的计算和变换：</li>
+</ul>
+<p>$$<br>\begin{align}<br>&amp;\frac{P(m_i|z_{1:t},x_{1:t})}{P(\hat{m_i}|z_{1:t},x_{1:t})}=\frac{P(m_i|z_t,x_t)}{1-P(m_i|z_t,x_t)}\frac{P(m_i|z_{1:t-1},x_{1:t-1})}{1-P(m_i|z_{1:t-1},x_{1:t-1})}\frac{1-P(m_i)}{P(m_i)}\\\<br>&amp;\quad\quad经过变换：\frac{P(x)}{1-P(x)}=Y \quad=&gt;\quad P(x)=\frac{1}{1+Y^{-1}}\\\<br>&amp;得到：P(m_i|z_{1:t},x_{1:t})=[1+\frac{1-P(m_i|z_t,x_t)}{P(m_i|z_t,x_t)}\frac{1-P(m_i|z_{1:t-1},x_{1:t-1})}{P(m_i|z_{1:t-1},x_{1:t-1})}\frac{P(m_i)}{1-P(m_i)}]^{-1}<br>\end{align}<br>$$</p>
+<ul>
+<li>上面得到的式子就与论文中相同了（其中$ｘ$去掉就是论文中的公式）</li>
+</ul>
+</li>
+</ul>
+<p>由于我们使用传感器对某一个体素进行检测是不断叠加的，而概率模型并不能进行累加，因此我们需要对乘法形式的概率模型转换成加法形式，就是取对数，根据公式中的结构，使用对数几率模型（$log-Odd$）:<br>$$<br>l(n|z_{1:t})<br>=log(\frac{P(n|z_{1:t})}{1-P(n|z_{1:t})})<br>= log(\frac{P(n|z_{1:t})}{P(\hat{n}|z_{1:t})})<br>$$</p>
+<p>因此将上面你的概率模型转化成对数形式，可以<strong>实现对观测数据进行累加</strong>（由于一般情况下我们考虑$P(n)＝0.5$ ，所以$l(n)=0$ 可以去掉，因此论文中也是去掉了这项）：<br>$$<br>l(n|z_{1:t})=<br>l(n|z_t)+l(n|z_{1:t-1})-l(n)<br>$$</p>
+<p>通过这个对数几率模型，我们也可以反推回原来的概率值，由此，概率值和对数几率值（$log-Odd$）进行了一一对应：<br>$$<br>P(x)=1-\frac{1}{1+exp(l(x))}<br>$$</p>
+<h5 id="OctoMap应用"><a href="#OctoMap应用" class="headerlink" title="OctoMap应用"></a>OctoMap应用</h5><table>
+<thead>
+<tr>
+<th align="center">void</th>
+<th align="center"><a href="https://octomap.github.io/octomap/doc/classoctomap_1_1AbstractOccupancyOcTree.html#a08f3d30cc002428cd5c925c4b2c31ba4">setProbHit</a> (double prob)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">void</td>
+<td align="center"><a href="https://octomap.github.io/octomap/doc/classoctomap_1_1AbstractOccupancyOcTree.html#a66e1aebc4f4ee4dfc1096006a035a831">setProbMiss</a> (double prob)</td>
+</tr>
+</tbody></table>
+<p>这两个函数决定了概率更新模型的具体参数，就是设置节点在传感器观测为占据/空闲后的概率值。若一个节点是占据的（Hit击中）默认概率值为0.7（对应上面的$P(n|z_t)$），其log Odd为0.85（对应上面的$l(n|z_t)$），若一个节点是空闲的（Miss错过）默认概率值为0.４（对应上面的$P(n|z_t)$），对应的log Odd为-0.4（对应上面的$l(n|z_t)$）。占据指的是观测的物体点，空闲指的是传感器到物体点之间的连线。</p>
+<p>查看默认的参数设定：</p>
+<table>
+<thead>
+<tr>
+<th align="center">double</th>
+<th align="center"><a href="https://octomap.github.io/octomap/doc/classoctomap_1_1AbstractOccupancyOcTree.html#a0e85226a3864e54fddab4a468609928f">getProbHit</a> () const</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">float</td>
+<td align="center"><a href="https://octomap.github.io/octomap/doc/classoctomap_1_1AbstractOccupancyOcTree.html#a811cab3e2de5ed561473e04729a858b3">getProbHitLog</a> () const</td>
+</tr>
+<tr>
+<td align="center">double</td>
+<td align="center"><a href="https://octomap.github.io/octomap/doc/classoctomap_1_1AbstractOccupancyOcTree.html#ac50656ad2abd2e702681d421c9cf9bb9">getProbMiss</a> () const</td>
+</tr>
+<tr>
+<td align="center">float</td>
+<td align="center"><a href="https://octomap.github.io/octomap/doc/classoctomap_1_1AbstractOccupancyOcTree.html#af84761e2d981ffa1bd7d3a3f7ca424de">getProbMissLog</a> () const</td>
+</tr>
+</tbody></table>
+<h4 id="多分辨率查询"><a href="#多分辨率查询" class="headerlink" title="多分辨率查询"></a>多分辨率查询</h4><p><u>这部分主要讲解的是父节点（除了叶子节点的其他节点）中应该存储什么信息？</u></p>
+<p>由于八叉树是一种分层的数据结构，那么我们就可以利用树中的内部节点来实现多分辨率查询。就是说，当树结构只被遍历到一个给定的深度（而不是叶子节点的深度），就会对这个3D空间进行比较粗糙的分割，如下图显示，分别是在不同的分辨率下对图像空间的分割。</p>
+<img src="https://s2.loli.net/2022/04/14/iyQsNgZoWbfIL8V.png" alt="" style="zoom:67%;" />
+
+<p>能够进行多分辨率查询，那么就需要确定内部节点的占用概率，而这个占用概率需要聚合其子节点的概率值。在现有的方法中，有两种方法确定内部节点的占用概率，分别是子节点的平均值和最大值：<br>$$<br>\begin{align}<br>&amp;\bar{l}(n)=\frac{1}{8}\sum_{i=1}^{8}{L(n_i)}\\\<br>&amp;or;the;maximum;occupancy\\\<br>&amp;\hat{l}(n)=\max_i{L(n_i)}<br>\end{align}<br>$$<br>在机器人导航中，出于保守考虑，使用<strong>子节点的最大值作为父节点的值</strong>，因为我们可以假设在机器人判断是否可以通过这个节点（空间立方块）的时候，那么直接将这个节点的最大值返回，可以规划无碰撞的路径，是比较保守的考虑。在OctoMap库中，也是应用的子节点的最大值作为父节点的值。</p>
+<h4 id="地图压缩"><a href="#地图压缩" class="headerlink" title="地图压缩"></a>地图压缩</h4><p><u>这部分主要讲解如何对树结构进行修剪，实现地图的最大压缩？</u></p>
+<h5 id="树结构修剪"><a href="#树结构修剪" class="headerlink" title="树结构修剪"></a>树结构修剪</h5><p>地图压缩的方法，就是对父节点下8个子节点有相同状态时，可以修剪掉此8个子节点。这要求子节点需要拥有相同的状态，然而上面我们的概率更新模型中，对子节点的状态量是一个概率值，无法判断其是否拥有相同的状态。因此，我们就需要使用一个上下限的方式，对节点的状态量进行上下界的分析：<br>$$<br>L(n|z_{1:t})=max(min(L(n|z_{1:t-1})+L(n|z_t),l_{max}),l_{min})<br>$$<br>其中$l_{max}$和$l_{min}$就是设置的上下限，当节点的$log-Odd$值达到下界或者上界时，我们就认为这个节点是稳定的（稳定空闲或者稳定占据），这样对于父节点的所有子节点都满足同一个稳定状态的时候，就可以修剪掉。如果在将来的测量与内部节点的状态相矛盾，那么它的子节点将相应的重新生成和更新。</p>
+<p>这种压缩的方式仅仅会导致概率值接近0和1的信息丢失，而对于两者之间的概率值会被保存下来。这足够完成机器人的导航任务，并能够实现更少的内存需求。</p>
+<h5 id="OctoMap应用-1"><a href="#OctoMap应用-1" class="headerlink" title="OctoMap应用"></a>OctoMap应用</h5><table>
+<thead>
+<tr>
+<th align="center">void</th>
+<th align="center"><a href="https://octomap.github.io/octomap/doc/classoctomap_1_1AbstractOccupancyOcTree.html#a754f6a8a72b55548fbb857f799e4157d">setClampingThresMax</a> (double thresProb)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">void</td>
+<td align="center"><a href="https://octomap.github.io/octomap/doc/classoctomap_1_1AbstractOccupancyOcTree.html#af60785aee147c34c5adde3eaa2972237">setClampingThresMin</a> (double thresProb)</td>
+</tr>
+</tbody></table>
+<p>这两个函数决定了体素执行$log-Odd$更新的阈值范围，就是上面说的上下界数值。就是说如果某一个体素的概率值爬升到0.97（对应的$log-Odd$为3.5）或者下降到0.12（对应的$log-Odd$为-2），就不再进行更新计算（认为这个是稳定的）。</p>
+<p>查看默认的参数设定：</p>
+<table>
+<thead>
+<tr>
+<th align="center">double</th>
+<th align="center"><a href="https://octomap.github.io/octomap/doc/classoctomap_1_1AbstractOccupancyOcTree.html#a1b00bb63bab03e4ddb4fb49327ca7c7d">getClampingThresMax</a> () const</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">float</td>
+<td align="center"><a href="https://octomap.github.io/octomap/doc/classoctomap_1_1AbstractOccupancyOcTree.html#a07d0d7e5459e7b207edbcbdd6e24ef50">getClampingThresMaxLog</a> () const</td>
+</tr>
+<tr>
+<td align="center">double</td>
+<td align="center"><a href="https://octomap.github.io/octomap/doc/classoctomap_1_1AbstractOccupancyOcTree.html#a27083afa63cde7665333f82ecaa7d34c">getClampingThresMin</a> () const</td>
+</tr>
+<tr>
+<td align="center">float</td>
+<td align="center"><a href="https://octomap.github.io/octomap/doc/classoctomap_1_1AbstractOccupancyOcTree.html#a7ab1e736299dd2cd2799c4b20cbda54d">getClampingThresMinLog</a> () const</td>
+</tr>
+</tbody></table>
+<h3 id="OctoMap实现细节"><a href="#OctoMap实现细节" class="headerlink" title="OctoMap实现细节"></a>OctoMap实现细节</h3><h4 id="OctoMap数据结构"><a href="#OctoMap数据结构" class="headerlink" title="OctoMap数据结构"></a>OctoMap数据结构</h4><p><u>这部分主要讲解的是OctoMap库在内存中如何存储八叉树的数据结构？</u></p>
+<p>在普通的建图过程中，需要每个建立的地图点设置好位置信息，但是八叉树的结构中，在建立八叉树地图的时候，节点的位置信息就已经确定，而不需要在节点中设置位置信息，只需要在节点中设置好占据概率。如下图所示，八叉树的每个节点使用指向8个指针数组的指针（数组中的每个值都是指向子节点的指针），只有当节点确实有子节点并且不是叶子节点时，才会分配这个数组，而每个叶子节点就只是存储一个空指针和一个占据概率值，对于机器人相关的数据集中，大部分都是叶子节点，所以会导致内存占用很少。<br><img src="https://s2.loli.net/2022/04/14/vKN2YQoVWsESlri.png" alt="" style="zoom: 67%;" /><br>因此，每个节点只分配一个 float 型的数据存储以及指向子节点的指针数组的指针(而不是直接包含子节点地址的指针)，只有存在子节点时，才会分配子节点的指针数组空间。由此在 32-bit 系统中(4 字节对齐)，每个内部节点需要40个字节，叶子节点只需要8个字节。</p>
+<h4 id="OctoMap地图存储"><a href="#OctoMap地图存储" class="headerlink" title="OctoMap地图存储"></a>OctoMap地图存储</h4><p><u>这部分主要讲解的是OctoMap库如何实现在尽量不损数据的情况下压缩地图存储量？</u></p>
+<p>在进行地图存储时需要在信息量损失最小的情况下进行压缩。如下图右所示，存储序列化时，每个叶子节点总共需要4字节的概率值，不需要状态量，而每个内部节点总共只需要2字节，用每2位数据表示8个子节点的状态量：00:未知，01:占据（表示这个为叶子节点），10:空闲，11:内部节点（表示有子节点）。在这种压缩方式下，大范围地图的存储一般也能很小。</p>
+<img src="https://s2.loli.net/2022/04/14/8oVkilI7YcBJGxU.png" alt="" style="zoom:67%;" />
+
+<p>根据存储的地图重建地图时，只需要知道坐标原点即可，虽然节点中并没有存储空间信息，但是由于八叉树的数据结构而将空间信息隐式的存储在编码中。</p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><blockquote>
+<p><a href="https://blog.csdn.net/weixin_41377786/article/details/120045287">2D栅格-3D八叉树地图及其概率更新_喂-你在楞什么的博客-CSDN博客</a><br><a href="https://www.cnblogs.com/gaoxiang12/p/5041142.html">SLAM拾萃(1)：octomap - 半闲居士 - 博客园 (cnblogs.com)</a><br><a href="https://leijiezhang001.github.io/OctoMap/">OctoMap | LeijieZhang个人博客</a><br><a href="https://blog.csdn.net/zengbowengood/article/details/104873012">从logit变换到logistic模型_帅帅de三叔-CSDN博客_logit变换</a></p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>三维重建</category>
+      </categories>
+      <tags>
+        <tag>技术分享</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Git版本控制工具笔记</title>
     <url>/2022/04/27/Git%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6%E5%B7%A5%E5%85%B7%E7%AC%94%E8%AE%B0/</url>
     <content><![CDATA[<p>git是分布式版本控制工具，此文章是根据黑马程序员的git教程编写，其中大量的使用了黑马程序员的教程中的内容，尤其是最后的IDE使用Git，但是IDE的部分其实只要自己捣鼓捣鼓就会了</p>
@@ -2520,156 +2670,6 @@
       </categories>
       <tags>
         <tag>Git笔记</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>技术分享－OctoMap八叉树建图原理</title>
-    <url>/2022/04/14/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB%EF%BC%8D%E5%85%AB%E5%8F%89%E6%A0%91%E5%9C%B0%E5%9B%BE/</url>
-    <content><![CDATA[<p>技术分享是课题组大概每一个半月需要我做的环节。这篇文章只是讲述了八叉树建图的原理，并没有涉及到OctoMap库的应用。</p>
-<span id="more"></span>
-
-<blockquote>
-<p>论文：OctoMap:An Efficient Probabilistic 3D Mapping Framework Based on Octrees</p>
-</blockquote>
-<h3 id="OctoMap建图框架"><a href="#OctoMap建图框架" class="headerlink" title="OctoMap建图框架"></a>OctoMap建图框架</h3><h4 id="八叉树原理"><a href="#八叉树原理" class="headerlink" title="八叉树原理"></a>八叉树原理</h4><p><u>这部分主要讲解八叉树是什么？</u></p>
-<p>八叉树就是一个空间构造地图的方法，其基本思想就是递归地把空间分成八个方块。当你想要找到空间中一个点块时，就不断地将分解的空间块再次分成8块，直到找到你要寻找的“点块”的大小为止。这些立方块在内存中以八叉树的结构组织起来，每个树的节点对应于空间中的一个立方块，每个立方块称为体素。在达到给定的最小体素大小之前（也称为叶子节点），这个空间会被连续细分为8个子空间。可以通过下面的图片对八叉树有个基本的认识：</p>
-<img src="https://s2.loli.net/2022/04/14/OaG48kC6KyYtUSF.png" alt="" style="zoom: 67%;" />
-
-<p>空间中一个节点（体素）的状态一共有三种：<strong>占据，空闲和未知</strong>，如果我们使用离散标签（0,1）来对每个节点表示这三种状态，那么当某一节点下的子节点的状态是相同的时候（子节点都被占据、都是空闲或者都是不确定），就可以将这些子节点修剪掉，只保留父节点，从而节省内存。</p>
-<p>对于空间中的三种状态中，未知和空闲是相对模糊的概念（因为我们一般得到的观测数据都是占据与否，而没有未知和空闲），为了解决这个问题，就需要显式地表示空闲体素，这些空闲体素是在传感器和被测点之间的区域创建（因为被测点和传感器之间一定是无遮挡的），例如，沿着激光发射方向，在传感器中心和激光击中的点的连线上所有体素都是空闲状态。</p>
-<p>八叉树中有一个分辨率的概念：<strong>最小的体素（立方块）大小就是分辨率</strong>。例如，我们定义1cm的分辨率（程序中单位是m），那么在最大深度为16的八叉树地图中（深度一般为16也可以为32），就指定了这个地图的空间大小是655.35$m^3$ 。</p>
-<h4 id="概率信息融合"><a href="#概率信息融合" class="headerlink" title="概率信息融合"></a>概率信息融合</h4><p><u>这一部分主要讲解的是对于叶子节点（空间中的最小体素），应该有什么信息表示它的空间状态？</u></p>
-<h5 id="概率更新模型"><a href="#概率更新模型" class="headerlink" title="概率更新模型"></a>概率更新模型</h5><p>仅仅使用离散的标签不能够应用于测量的噪声数据，应该使用0~1之间的数值表示，也就是概率模型。使用概率数值对体素的占据与否进行判断，<strong>概率值越高，这个体素被占据的可能性越大</strong>。而这个概率模型在论文中如下：<br>$$<br>P(n|z_{1:t})=<br>[1+\frac{1-P(n|z_t)}{P(n|z_t)}\frac{1-P(n|z_{1:t-1})}{P(n|z_{1:t-1})}\frac{P(n)}{1-P(n)}]^{-1}<br>$$<br>对上面的公式进行简单的解读：</p>
-<ul>
-<li><p>上面公式是通过2D栅格地图推导的，先对上面的公式符号有所了解：</p>
-</li>
-<li><ul>
-<li>$P(n|z_{1:t})$ ：是在观测数据为$｛z_1,z_2…z_t｝$ （其中t是时刻）下判断$n$叶子节点为占据的概率</li>
-<li>$P(n)$ ：是在未观测前叶子节点是否被占据的先验概率，一般我们基于均匀假设认为空间中一个叶子节点被占据是均匀分布的，所以$P(n)＝0.5$ </li>
-</ul>
-</li>
-<li><p>下面是2D栅格地图的推导，同样适用于在3D地图中：</p>
-</li>
-<li><ul>
-<li>通过贝叶斯法则和马尔科夫性，推理节点的占据概率（后验概率）计算过程：</li>
-<li><ul>
-<li>其中$x_{1:t}$ 是指1~t时刻的机器人位姿集合，因为对于建图来说，并不考虑当前的位姿状态，因此下面的公式中会出现去掉$x_t$的情况</li>
-</ul>
-</li>
-</ul>
-<p>$$<br>\begin{align}<br>P(m_i|x_{1:t},z_{1:t})<br>&amp;=\frac{P(z_t|m_i,z_{1:t-1},x_{1:t})P(m_i|z_{1:t-1},x_{1:t})}{P(z_t|z_{1:t-1},x_{1:t-1})}\\\<br>&amp;=\frac{P(z_t|m_i,x_t)P(m_i|z_{1:t-1},x_{1:t-1})} {P(z_i|z_{1:t-1},x_{1:t-1})}\\\<br>&amp;=\frac{P(m_i|z_t,x_t)P(z_t|x_t)P(m_i|z_{1:t-1},x_{1:t-1})} {P(m_i|x_t)P(z_t|z_{1:t-1},x_{1:t-1})}\\\<br>&amp;=\frac{P(m_i|z_t,x_t)P(z_t|x_t)P(m_i|z_{1:t-1},x_{1:t-1})} {P(m_i)P(z_t|z_{1:t-1},x_{1:t-1})}<br>\end{align}<br>$$</p>
-<ul>
-<li>由于上面公式不好计算，引入了几率模型（$Odd$）:</li>
-</ul>
-<p>$$<br>Odd(A) = \frac{p}{1-p}<br>$$</p>
-<ul>
-<li>那么就需要得到节点占据概率的反状态，也就是节点的空闲概率：</li>
-</ul>
-<p>$$<br>P(\hat{m_i}|z_{1:t},x_{1:t})<br>=\frac{P(\hat{m_i}|z_t,x_t)P(z_t|x_t)P(\hat{m_i}|z_{1:t-1},x_{1:t-1})}{P(\hat{m_i})P(z_i|z_{1:t-1},x_{1:t-1})}<br>$$</p>
-<ul>
-<li>经过几率模型的计算和变换：</li>
-</ul>
-<p>$$<br>\begin{align}<br>&amp;\frac{P(m_i|z_{1:t},x_{1:t})}{P(\hat{m_i}|z_{1:t},x_{1:t})}=\frac{P(m_i|z_t,x_t)}{1-P(m_i|z_t,x_t)}\frac{P(m_i|z_{1:t-1},x_{1:t-1})}{1-P(m_i|z_{1:t-1},x_{1:t-1})}\frac{1-P(m_i)}{P(m_i)}\\\<br>&amp;\quad\quad经过变换：\frac{P(x)}{1-P(x)}=Y \quad=&gt;\quad P(x)=\frac{1}{1+Y^{-1}}\\\<br>&amp;得到：P(m_i|z_{1:t},x_{1:t})=[1+\frac{1-P(m_i|z_t,x_t)}{P(m_i|z_t,x_t)}\frac{1-P(m_i|z_{1:t-1},x_{1:t-1})}{P(m_i|z_{1:t-1},x_{1:t-1})}\frac{P(m_i)}{1-P(m_i)}]^{-1}<br>\end{align}<br>$$</p>
-<ul>
-<li>上面得到的式子就与论文中相同了（其中$ｘ$去掉就是论文中的公式）</li>
-</ul>
-</li>
-</ul>
-<p>由于我们使用传感器对某一个体素进行检测是不断叠加的，而概率模型并不能进行累加，因此我们需要对乘法形式的概率模型转换成加法形式，就是取对数，根据公式中的结构，使用对数几率模型（$log-Odd$）:<br>$$<br>l(n|z_{1:t})<br>=log(\frac{P(n|z_{1:t})}{1-P(n|z_{1:t})})<br>= log(\frac{P(n|z_{1:t})}{P(\hat{n}|z_{1:t})})<br>$$</p>
-<p>因此将上面你的概率模型转化成对数形式，可以<strong>实现对观测数据进行累加</strong>（由于一般情况下我们考虑$P(n)＝0.5$ ，所以$l(n)=0$ 可以去掉，因此论文中也是去掉了这项）：<br>$$<br>l(n|z_{1:t})=<br>l(n|z_t)+l(n|z_{1:t-1})-l(n)<br>$$</p>
-<p>通过这个对数几率模型，我们也可以反推回原来的概率值，由此，概率值和对数几率值（$log-Odd$）进行了一一对应：<br>$$<br>P(x)=1-\frac{1}{1+exp(l(x))}<br>$$</p>
-<h5 id="OctoMap应用"><a href="#OctoMap应用" class="headerlink" title="OctoMap应用"></a>OctoMap应用</h5><table>
-<thead>
-<tr>
-<th align="center">void</th>
-<th align="center"><a href="https://octomap.github.io/octomap/doc/classoctomap_1_1AbstractOccupancyOcTree.html#a08f3d30cc002428cd5c925c4b2c31ba4">setProbHit</a> (double prob)</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">void</td>
-<td align="center"><a href="https://octomap.github.io/octomap/doc/classoctomap_1_1AbstractOccupancyOcTree.html#a66e1aebc4f4ee4dfc1096006a035a831">setProbMiss</a> (double prob)</td>
-</tr>
-</tbody></table>
-<p>这两个函数决定了概率更新模型的具体参数，就是设置节点在传感器观测为占据/空闲后的概率值。若一个节点是占据的（Hit击中）默认概率值为0.7（对应上面的$P(n|z_t)$），其log Odd为0.85（对应上面的$l(n|z_t)$），若一个节点是空闲的（Miss错过）默认概率值为0.４（对应上面的$P(n|z_t)$），对应的log Odd为-0.4（对应上面的$l(n|z_t)$）。占据指的是观测的物体点，空闲指的是传感器到物体点之间的连线。</p>
-<p>查看默认的参数设定：</p>
-<table>
-<thead>
-<tr>
-<th align="center">double</th>
-<th align="center"><a href="https://octomap.github.io/octomap/doc/classoctomap_1_1AbstractOccupancyOcTree.html#a0e85226a3864e54fddab4a468609928f">getProbHit</a> () const</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">float</td>
-<td align="center"><a href="https://octomap.github.io/octomap/doc/classoctomap_1_1AbstractOccupancyOcTree.html#a811cab3e2de5ed561473e04729a858b3">getProbHitLog</a> () const</td>
-</tr>
-<tr>
-<td align="center">double</td>
-<td align="center"><a href="https://octomap.github.io/octomap/doc/classoctomap_1_1AbstractOccupancyOcTree.html#ac50656ad2abd2e702681d421c9cf9bb9">getProbMiss</a> () const</td>
-</tr>
-<tr>
-<td align="center">float</td>
-<td align="center"><a href="https://octomap.github.io/octomap/doc/classoctomap_1_1AbstractOccupancyOcTree.html#af84761e2d981ffa1bd7d3a3f7ca424de">getProbMissLog</a> () const</td>
-</tr>
-</tbody></table>
-<h4 id="多分辨率查询"><a href="#多分辨率查询" class="headerlink" title="多分辨率查询"></a>多分辨率查询</h4><p><u>这部分主要讲解的是父节点（除了叶子节点的其他节点）中应该存储什么信息？</u></p>
-<p>由于八叉树是一种分层的数据结构，那么我们就可以利用树中的内部节点来实现多分辨率查询。就是说，当树结构只被遍历到一个给定的深度（而不是叶子节点的深度），就会对这个3D空间进行比较粗糙的分割，如下图显示，分别是在不同的分辨率下对图像空间的分割。</p>
-<img src="https://s2.loli.net/2022/04/14/iyQsNgZoWbfIL8V.png" alt="" style="zoom:67%;" />
-
-<p>能够进行多分辨率查询，那么就需要确定内部节点的占用概率，而这个占用概率需要聚合其子节点的概率值。在现有的方法中，有两种方法确定内部节点的占用概率，分别是子节点的平均值和最大值：<br>$$<br>\begin{align}<br>&amp;\bar{l}(n)=\frac{1}{8}\sum_{i=1}^{8}{L(n_i)}\\\<br>&amp;or;the;maximum;occupancy\\\<br>&amp;\hat{l}(n)=\max_i{L(n_i)}<br>\end{align}<br>$$<br>在机器人导航中，出于保守考虑，使用<strong>子节点的最大值作为父节点的值</strong>，因为我们可以假设在机器人判断是否可以通过这个节点（空间立方块）的时候，那么直接将这个节点的最大值返回，可以规划无碰撞的路径，是比较保守的考虑。在OctoMap库中，也是应用的子节点的最大值作为父节点的值。</p>
-<h4 id="地图压缩"><a href="#地图压缩" class="headerlink" title="地图压缩"></a>地图压缩</h4><p><u>这部分主要讲解如何对树结构进行修剪，实现地图的最大压缩？</u></p>
-<h5 id="树结构修剪"><a href="#树结构修剪" class="headerlink" title="树结构修剪"></a>树结构修剪</h5><p>地图压缩的方法，就是对父节点下8个子节点有相同状态时，可以修剪掉此8个子节点。这要求子节点需要拥有相同的状态，然而上面我们的概率更新模型中，对子节点的状态量是一个概率值，无法判断其是否拥有相同的状态。因此，我们就需要使用一个上下限的方式，对节点的状态量进行上下界的分析：<br>$$<br>L(n|z_{1:t})=max(min(L(n|z_{1:t-1})+L(n|z_t),l_{max}),l_{min})<br>$$<br>其中$l_{max}$和$l_{min}$就是设置的上下限，当节点的$log-Odd$值达到下界或者上界时，我们就认为这个节点是稳定的（稳定空闲或者稳定占据），这样对于父节点的所有子节点都满足同一个稳定状态的时候，就可以修剪掉。如果在将来的测量与内部节点的状态相矛盾，那么它的子节点将相应的重新生成和更新。</p>
-<p>这种压缩的方式仅仅会导致概率值接近0和1的信息丢失，而对于两者之间的概率值会被保存下来。这足够完成机器人的导航任务，并能够实现更少的内存需求。</p>
-<h5 id="OctoMap应用-1"><a href="#OctoMap应用-1" class="headerlink" title="OctoMap应用"></a>OctoMap应用</h5><table>
-<thead>
-<tr>
-<th align="center">void</th>
-<th align="center"><a href="https://octomap.github.io/octomap/doc/classoctomap_1_1AbstractOccupancyOcTree.html#a754f6a8a72b55548fbb857f799e4157d">setClampingThresMax</a> (double thresProb)</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">void</td>
-<td align="center"><a href="https://octomap.github.io/octomap/doc/classoctomap_1_1AbstractOccupancyOcTree.html#af60785aee147c34c5adde3eaa2972237">setClampingThresMin</a> (double thresProb)</td>
-</tr>
-</tbody></table>
-<p>这两个函数决定了体素执行$log-Odd$更新的阈值范围，就是上面说的上下界数值。就是说如果某一个体素的概率值爬升到0.97（对应的$log-Odd$为3.5）或者下降到0.12（对应的$log-Odd$为-2），就不再进行更新计算（认为这个是稳定的）。</p>
-<p>查看默认的参数设定：</p>
-<table>
-<thead>
-<tr>
-<th align="center">double</th>
-<th align="center"><a href="https://octomap.github.io/octomap/doc/classoctomap_1_1AbstractOccupancyOcTree.html#a1b00bb63bab03e4ddb4fb49327ca7c7d">getClampingThresMax</a> () const</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">float</td>
-<td align="center"><a href="https://octomap.github.io/octomap/doc/classoctomap_1_1AbstractOccupancyOcTree.html#a07d0d7e5459e7b207edbcbdd6e24ef50">getClampingThresMaxLog</a> () const</td>
-</tr>
-<tr>
-<td align="center">double</td>
-<td align="center"><a href="https://octomap.github.io/octomap/doc/classoctomap_1_1AbstractOccupancyOcTree.html#a27083afa63cde7665333f82ecaa7d34c">getClampingThresMin</a> () const</td>
-</tr>
-<tr>
-<td align="center">float</td>
-<td align="center"><a href="https://octomap.github.io/octomap/doc/classoctomap_1_1AbstractOccupancyOcTree.html#a7ab1e736299dd2cd2799c4b20cbda54d">getClampingThresMinLog</a> () const</td>
-</tr>
-</tbody></table>
-<h3 id="OctoMap实现细节"><a href="#OctoMap实现细节" class="headerlink" title="OctoMap实现细节"></a>OctoMap实现细节</h3><h4 id="OctoMap数据结构"><a href="#OctoMap数据结构" class="headerlink" title="OctoMap数据结构"></a>OctoMap数据结构</h4><p><u>这部分主要讲解的是OctoMap库在内存中如何存储八叉树的数据结构？</u></p>
-<p>在普通的建图过程中，需要每个建立的地图点设置好位置信息，但是八叉树的结构中，在建立八叉树地图的时候，节点的位置信息就已经确定，而不需要在节点中设置位置信息，只需要在节点中设置好占据概率。如下图所示，八叉树的每个节点使用指向8个指针数组的指针（数组中的每个值都是指向子节点的指针），只有当节点确实有子节点并且不是叶子节点时，才会分配这个数组，而每个叶子节点就只是存储一个空指针和一个占据概率值，对于机器人相关的数据集中，大部分都是叶子节点，所以会导致内存占用很少。<br><img src="https://s2.loli.net/2022/04/14/vKN2YQoVWsESlri.png" alt="" style="zoom: 67%;" /><br>因此，每个节点只分配一个 float 型的数据存储以及指向子节点的指针数组的指针(而不是直接包含子节点地址的指针)，只有存在子节点时，才会分配子节点的指针数组空间。由此在 32-bit 系统中(4 字节对齐)，每个内部节点需要40个字节，叶子节点只需要8个字节。</p>
-<h4 id="OctoMap地图存储"><a href="#OctoMap地图存储" class="headerlink" title="OctoMap地图存储"></a>OctoMap地图存储</h4><p><u>这部分主要讲解的是OctoMap库如何实现在尽量不损数据的情况下压缩地图存储量？</u></p>
-<p>在进行地图存储时需要在信息量损失最小的情况下进行压缩。如下图右所示，存储序列化时，每个叶子节点总共需要4字节的概率值，不需要状态量，而每个内部节点总共只需要2字节，用每2位数据表示8个子节点的状态量：00:未知，01:占据（表示这个为叶子节点），10:空闲，11:内部节点（表示有子节点）。在这种压缩方式下，大范围地图的存储一般也能很小。</p>
-<img src="https://s2.loli.net/2022/04/14/8oVkilI7YcBJGxU.png" alt="" style="zoom:67%;" />
-
-<p>根据存储的地图重建地图时，只需要知道坐标原点即可，虽然节点中并没有存储空间信息，但是由于八叉树的数据结构而将空间信息隐式的存储在编码中。</p>
-<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><blockquote>
-<p><a href="https://blog.csdn.net/weixin_41377786/article/details/120045287">2D栅格-3D八叉树地图及其概率更新_喂-你在楞什么的博客-CSDN博客</a><br><a href="https://www.cnblogs.com/gaoxiang12/p/5041142.html">SLAM拾萃(1)：octomap - 半闲居士 - 博客园 (cnblogs.com)</a><br><a href="https://leijiezhang001.github.io/OctoMap/">OctoMap | LeijieZhang个人博客</a><br><a href="https://blog.csdn.net/zengbowengood/article/details/104873012">从logit变换到logistic模型_帅帅de三叔-CSDN博客_logit变换</a></p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>三维重建</category>
-      </categories>
-      <tags>
-        <tag>技术分享</tag>
       </tags>
   </entry>
 </search>
